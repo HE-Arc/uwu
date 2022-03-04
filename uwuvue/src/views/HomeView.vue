@@ -13,6 +13,10 @@ export default {
   name: 'HomeView',
   components: {
     HelloWorld
+  },
+  created() {
+    console.log(this.$store.state.token)
+    console.log(this.$store.getters.isLogged)
   }
 }
 </script>
