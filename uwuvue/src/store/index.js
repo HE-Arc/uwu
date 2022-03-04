@@ -8,6 +8,10 @@ export default createStore({
   getters: {
     isLogged(state) {
       return state.token != '';
+    },
+
+    headerToken(state) {
+      return `Token ${state.token}`
     }
   },
 

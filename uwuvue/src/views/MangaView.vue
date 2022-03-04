@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container p-5">
     <ul>
       <li v-for="(manga, index) in mangas" :key="index">{{manga.name}}</li>
     </ul>
@@ -22,15 +22,6 @@ export default {
   },
 
   created() {
-    api.get('/mangas/')
-      .then(response => {
-        console.log(response.data.results)
-        this.mangas = response.data.results
-      })
-      .catch(error => {
-        console.log(error)
-      })
-
     api.post('/auth/', {
         username: 'admin',
         password: 'password'
@@ -40,6 +31,14 @@ export default {
         this.$store.dispatch('logIn', {
           token: response.data.token
         })
+      })
+      .catch(error => {
+        console.log(error)
+      })
+
+      api.get('/mangas/')
+      .then(response => {
+        this.mangas = response.data.results
       })
       .catch(error => {
         console.log(error)
