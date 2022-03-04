@@ -1,13 +1,13 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-      <router-link to="/" class="navbar-brand">uwu</router-link>
+      <router-link to="/" class="navbar-brand text-primary">uwu</router-link>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggle">
+        <span class="navbar-toggler-icon text-primary"></span>
       </button>
 
-      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="collapse navbar-collapse" id="navbarToggle">
         <div class="navbar-nav">
           <router-link to="/about" class="nav-link">About</router-link>
 
