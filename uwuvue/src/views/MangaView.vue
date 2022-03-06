@@ -24,7 +24,7 @@ export default {
   created() {
     api.post('/auth/', {
         username: 'admin',
-        password: 'password'
+        password: 'passwordw'
       })
       .then(response => {
         console.log(response.data.token)
@@ -41,7 +41,7 @@ export default {
         this.mangas = response.data.results
       })
       .catch(error => {
-        console.log(error)
+        console.log(error.response.data)
       })
   }
 }
