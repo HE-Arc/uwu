@@ -1,34 +1,26 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from uwu.uwuapp.models import Chapter, HasRead, IsFriend, Manga
+from uwu.uwuapp.models import Chapter, Manga, UwuUser
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    user1 = serializers.StringRelatedField(many=True)
-    user2 = serializers.StringRelatedField(many=True)
-    
+    friends = serializers.CharField(source='user.favorites')
+    favorites = serializers.CharField(source='user.favorites')
+    readed = serializers.CharField(source='user.favorites')
+
+
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'user1', 'user2']
+        fields = ['url', 'username', 'email', 'friends', 'favorites', 'readed']
 
 class MangaSerializer(serializers.HyperlinkedModelSerializer):
-    chapters = serializers.StringRelatedField(many=True)
+    chapters = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='chapter-detail')
+    isFinished = serializers.BooleanField(source='is_finished')
     
     class Meta:
         model = Manga
-        fields = ['url', 'name', 'author', 'date', 'is_finished', 'chapter_nb', 'chapters']
+        fields = ['url', 'name', 'author', 'date', 'isFinished', 'chapters', 'image']
         
 class ChapterSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Chapter
         fields = ['url', 'manga_id', 'order', 'title', 'page_nb']
-
-class IsFriendSerializer(serializers.HyperlinkedModelSerializer):
-    
-    class Meta:
-        model = IsFriend
-        fields = ['url', 'user1_id', 'user2_id']
-        
-class HasReadSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = HasRead
-        fields = ['url', 'user_id', 'chapter_id']

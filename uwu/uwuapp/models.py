@@ -1,9 +1,12 @@
+from distutils.command.upload import upload
 from tkinter import CASCADE
 from tokenize import Number
 from xml.dom.minidom import CharacterData
 from django.db import models
+from django.dispatch import receiver
 from django.forms import CharField
 from django.contrib.auth.models import User
+
 
 # Create your models here.
 class Manga(models.Model):
@@ -11,7 +14,7 @@ class Manga(models.Model):
     author = models.CharField(max_length=128)
     date = models.DateField()
     is_finished = models.BooleanField()
-    chapter_nb = models.IntegerField(default=0)
+    image = models.ImageField(upload_to='images/')
 
     def __str__(self):
         return self.name
@@ -24,12 +27,82 @@ class Chapter(models.Model):
 
     def __str__(self):
         return f'{self.order}: {self.title}'
+
+class UwuUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user')
+
+    friends = models.ManyToManyField(User, blank=True, related_name='friends')
+    favorites = models.ManyToManyField(Manga, blank=True, related_name='favorites') 
+    readed = models.ManyToManyField(Chapter, blank=True, related_name='readed') 
+
+    def __str__(self):
+        return str(self.user)
     
-class IsFriend(models.Model):
-    user1_id = models.ForeignKey(User, related_name='user1', on_delete=models.CASCADE)
-    user2_id = models.ForeignKey(User, related_name='user2', on_delete=models.CASCADE)
+    def add_friend(self, other_user):
+        """
+        Add a new friend
+        """
+        if not other_user in self.friends:
+            self.friends.add(other_user)
     
-class HasRead(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    chapter_id = models.ForeignKey(Chapter, on_delete=models.CASCADE)
+    def remove_friend(self, other_user):
+        """
+        Remove a friend
+        """
+        if other_user in self.friends:
+            self.friends.remove(other_user)
     
+    def unfriend(self, other_user):
+        """
+        Unfriendinmg someone from the 'friends'
+        """
+        self.remove_friend(other_user)
+        other_user.uwuuser.remove_friend(self)
+
+    def is_friend(self, other_user):
+        """
+        Is this user friend with the 'other_user'?
+        """
+        if other_user in self.friends:
+            return True
+        return False
+
+class FriendRequest(models.Model):
+    """
+    A 'FriendRequest' has one sender and a receiver. 
+    It can be on hold or not and a timestamp is created on the add action.
+    """
+
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver')
+
+    is_on_hold = models.BooleanField(blank=True, null=False, default=True)
+
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.sender.username
+
+    def accept(self):
+        """
+        Accept a friend request
+        Update both 'sender' and 'receiver' 'friends' field
+        """
+        self.receiver.uwuuser.add_friend(self.sender)
+        self.sender.uwuuser.add_friend(self.receiver)
+        self.is_on_hold = False
+        self.save()
+
+    def decline(self):
+        """
+        Decline a friend request by setting 'is_on_hold' field to False
+        """
+        self.is_on_hold = False
+        self.save()
+
+    def cancel(self):
+        """
+        Cancel a friend request by setting 'is_on_hold' field to False
+        """
+        self.is_on_hold = False
+        self.save()
