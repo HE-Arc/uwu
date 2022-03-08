@@ -38,34 +38,15 @@ class UwuUser(models.Model):
     def __str__(self):
         return str(self.user)
     
-    def add_friend(self, other_user):
-        """
-        Add a new friend
-        """
-        if not other_user in self.friends:
-            self.friends.add(other_user)
     
     def remove_friend(self, other_user):
         """
         Remove a friend
         """
-        if other_user in self.friends:
+        try:
             self.friends.remove(other_user)
-    
-    def unfriend(self, other_user):
-        """
-        Unfriendinmg someone from the 'friends'
-        """
-        self.remove_friend(other_user)
-        other_user.uwuuser.remove_friend(self)
-
-    def is_friend(self, other_user):
-        """
-        Is this user friend with the 'other_user'?
-        """
-        if other_user in self.friends:
-            return True
-        return False
+        except Exception as e:
+            print(f"error! : {e}")
 
 class FriendRequest(models.Model):
     """
