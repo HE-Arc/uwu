@@ -6,15 +6,19 @@
 
       <div class="form-group m-2">
         <label for="userInput">Username</label>
-        <input v-model="username" type="text" class="form-control" id="userInput" placeholder="Username">
+        <input v-model="username" type="text" class="form-control" id="userInput" placeholder="username">
       </div>
 
       <div class="form-group m-2">
         <label for="passwordInput">Password</label>
-        <input v-model="password" type="password" class="form-control" id="passwordInput" placeholder="Password">
+        <input v-model="password" type="password" class="form-control" id="passwordInput" placeholder="password">
       </div>
 
-      <button type="submit" class="btn btn-primary m-2">Submit</button>
+      <button class="btn btn-primary m-2" type="button" disabled v-if="loading">
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        loading...
+      </button>
+      <button type="submit" class="btn btn-primary m-2" v-else>submit</button>
     </form>
   </div>
 </template>
@@ -32,7 +36,8 @@ export default {
     return {
       username: '',
       password: '',
-      error: ''
+      error: '',
+      loading: false
     }
   },
 
@@ -44,6 +49,7 @@ export default {
       }
 
       this.error = ''
+      this.loading = true
 
       api.post('/auth/', {
         username: this.username,
@@ -55,9 +61,11 @@ export default {
         })
 
         this.$router.push({ name: 'home' })
+        this.loading = false
       })
       .catch(() => {
         this.error = 'Wrong username or password'
+        this.loading = false
       })
     }
   },

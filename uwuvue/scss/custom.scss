@@ -5,4 +5,11 @@ $dark: #211C1C;
 $body-bg: #000;
 $body-color: #e5e5e5;
 
-@import "../node_modules/bootstrap/scss/bootstrap"
+@font-face {
+  font-family: "suisse";
+  src: url("Antarctica-VF.ttf") format("truetype");
+}
+
+$font-family-sans-serif: "suisse";
+
+@import "../node_modules/bootstrap/scss/bootstrap";
