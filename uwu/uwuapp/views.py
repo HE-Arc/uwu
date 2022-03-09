@@ -1,5 +1,6 @@
 import re
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.dispatch import receiver
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions, filters, status, serializers
@@ -49,7 +50,29 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('date_joined')
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAdminUser]
+    
+    def create(self, validated_data):
+        try:
+            user = User.objects.create(username=validated_data.data['username'])
+            user.set_password(validated_data.data['password'])
+            user.save()
+            
+            user_uwu = UwuUser.objects.create(user=user)
+            user_uwu.save()
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                                'status' : f'The user {user} has been created!',
+                                'token': token.key,
+                                'code':status.HTTP_202_ACCEPTED,
+                            },
+                            status=status.HTTP_202_ACCEPTED)
+        except IntegrityError:
+            return Response({
+                                'status' : f'The username {validated_data.data["username"]} is already used!',
+                                'code':status.HTTP_409_CONFLICT
+                            },
+                            status=status.HTTP_409_CONFLICT)
+        
     
     
 class MangaViewSet(viewsets.ModelViewSet):
