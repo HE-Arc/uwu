@@ -29,7 +29,7 @@ class Chapter(models.Model):
         return f'{self.order}: {self.title}'
 
 class UwuUser(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='user')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
 
     friends = models.ManyToManyField(User, blank=True, related_name='friends')
     favorites = models.ManyToManyField(Manga, blank=True, related_name='favorites') 
@@ -47,6 +47,14 @@ class UwuUser(models.Model):
             self.friends.remove(other_user)
         except Exception as e:
             print(f"error! : {e}")
+            
+    def is_friend(self, other_user):
+        """
+        Is this user friend with the 'other_user'?
+        """
+        if other_user in self.friends:
+            return True
+        return False
 
 class FriendRequest(models.Model):
     """

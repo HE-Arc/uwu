@@ -1,16 +1,21 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from uwu.uwuapp.models import Chapter, Manga, UwuUser
+from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    friends = serializers.CharField(source='user.favorites')
-    favorites = serializers.CharField(source='user.favorites')
-    readed = serializers.CharField(source='user.favorites')
-
-
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'friends', 'favorites', 'readed']
+        fields = ['url', 'username', 'email']
+
+class UwuUserSerializer(serializers.HyperlinkedModelSerializer):
+    
+    username = serializers.CharField(source='user.username')
+    
+    class Meta:
+        model = UwuUser
+        fields = ['url', 'username', 'friends', 'favorites', 'readed']
+        
+        
 
 class MangaSerializer(serializers.HyperlinkedModelSerializer):
     chapters = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='chapter-detail')
@@ -24,3 +29,9 @@ class ChapterSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Chapter
         fields = ['url', 'manga_id', 'order', 'title', 'page_nb']
+        
+        
+class FriendRequestSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = FriendRequest
+        fields = '__all__'
