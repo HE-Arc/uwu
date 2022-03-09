@@ -6,10 +6,10 @@ $body-bg: #000;
 $body-color: #e5e5e5;
 
 @font-face {
-  font-family: "suisse";
+  font-family: "Antartica";
   src: url("Antarctica-VF.ttf") format("truetype");
 }
 
-$font-family-sans-serif: "suisse";
+$font-family-sans-serif: "Antartica";
 
 @import "../node_modules/bootstrap/scss/bootstrap";

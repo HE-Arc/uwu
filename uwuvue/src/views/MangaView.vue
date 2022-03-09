@@ -22,20 +22,6 @@ export default {
   },
 
   created() {
-    api.post('/auth/', {
-        username: 'admin',
-        password: 'passwordw'
-      })
-      .then(response => {
-        console.log(response.data.token)
-        this.$store.dispatch('logIn', {
-          token: response.data.token
-        })
-      })
-      .catch(error => {
-        console.log(error)
-      })
-
       api.get('/mangas/')
       .then(response => {
         this.mangas = response.data.results

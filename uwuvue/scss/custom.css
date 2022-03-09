@@ -1,6 +1,6 @@
 @charset "UTF-8";
 @font-face {
-  font-family: "suisse";
+  font-family: "Antartica";
   src: url("Antarctica-VF.ttf") format("truetype");
 }
 /*!
@@ -52,7 +52,7 @@
   --bs-black-rgb: 0, 0, 0;
   --bs-body-color-rgb: 229, 229, 229;
   --bs-body-bg-rgb: 0, 0, 0;
-  --bs-font-sans-serif: "suisse";
+  --bs-font-sans-serif: "Antartica";
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --bs-body-font-family: var(--bs-font-sans-serif);
