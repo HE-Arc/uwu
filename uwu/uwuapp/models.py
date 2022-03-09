@@ -38,6 +38,9 @@ class UwuUser(models.Model):
     def __str__(self):
         return str(self.user)
     
+    def add_friend(self, other_user):
+        self.friends.add(other_user)
+    
     
     def remove_friend(self, other_user):
         """

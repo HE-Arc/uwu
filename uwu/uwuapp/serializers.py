@@ -5,10 +5,9 @@ from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'email']
+        fields = ['url', 'username', 'email', 'pk']
 
 class UwuUserSerializer(serializers.HyperlinkedModelSerializer):
-    
     username = serializers.CharField(source='user.username')
     
     class Meta:
