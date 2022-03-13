@@ -15,7 +15,7 @@ const routes = [
     meta: { title: 'About' }
   },
   {
-    path: '/mangas',
+    path: '/mangas/:id',
     name: 'manga',
     component: () => import('../views/MangaView.vue'),
     meta: { title: 'Mangas' }
@@ -25,6 +25,12 @@ const routes = [
     name: 'login',
     component: () => import('../views/LoginView.vue'),
     meta: { title: 'Login' }
+  },
+  {
+    path: '/search/:query?',
+    name: 'search',
+    component: () => import('../views/SearchView.vue'),
+    meta: { title: 'Search' }
   }
 ]
 

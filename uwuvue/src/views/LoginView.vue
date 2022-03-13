@@ -1,24 +1,24 @@
 <template>
   <div class="row">
-    <div class="col-md-6"/>
-    <form @submit.prevent="logIn" class="col-md-6">
-      <div v-if="error" class="alert alert-info m-2">{{error}}</div>
+    <div class="col-md-4 col-lg-6"/>
+    <form @submit.prevent="logIn" class="col-md-8 col-lg-6">
+      <div v-if="error" class="alert alert-info mb-2">{{error}}</div>
 
-      <div class="form-group m-2">
+      <div class="form-group mb-2">
         <label for="userInput">Username</label>
         <input v-model="username" type="text" class="form-control" id="userInput" placeholder="username">
       </div>
 
-      <div class="form-group m-2">
+      <div class="form-group mb-2">
         <label for="passwordInput">Password</label>
         <input v-model="password" type="password" class="form-control" id="passwordInput" placeholder="password">
       </div>
 
-      <button class="btn btn-primary m-2" type="button" disabled v-if="loading">
+      <button class="btn btn-primary mb-2" type="button" disabled v-if="loading">
         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
         loading...
       </button>
-      <button type="submit" class="btn btn-primary m-2" v-else>submit</button>
+      <button type="submit" class="btn btn-primary mb-2" v-else>login</button>
     </form>
   </div>
 </template>
