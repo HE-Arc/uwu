@@ -11,7 +11,7 @@
         <div class="navbar-nav me-auto">
           <router-link to="/about" class="nav-link">about</router-link>
 
-          <router-link to="/mangas" class="nav-link">mangas</router-link>
+          <router-link to="/search" class="nav-link">search</router-link>
         </div>
         
         <div class="navbar-nav">

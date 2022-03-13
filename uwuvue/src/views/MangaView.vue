@@ -1,9 +1,7 @@
 <template>
-  <div class="container p-5">
-    <ul>
-      <li v-for="(manga, index) in mangas" :key="index">{{manga.name}}</li>
-    </ul>
-  </div>
+  <ul>
+    <li v-for="(manga, index) in mangas" :key="index">{{manga.name}}</li>
+  </ul>
 </template>
 
 <script>
@@ -17,7 +15,7 @@ export default {
 
   data() {
     return {
-      mangas: []
+      manga: null
     }
   },
 
