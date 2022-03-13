@@ -1,9 +1,8 @@
-import re
+
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from django.dispatch import receiver
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, permissions, filters, status, serializers
+from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from uwu.uwuapp.serializers import ChapterSerializer, FriendRequestSerializer, UwuUserSerializer, MangaSerializer, UserSerializer
@@ -85,6 +84,15 @@ class MangaViewSet(viewsets.ModelViewSet):
     filterset_fields = ['is_finished']
     search_fields = ['name', 'author']
     ordering_fields = ['name', 'author', 'date']
+    # from django.core.files.uploadedfile import InMemoryUploadedFile
+    # def create(self, request):  
+    #     data = request.data
+        
+    #     manga = Manga.objects.create(name=data['name'], author=data['author'], date=data['date'], image=data['image'])
+    #     manga.save()
+    #     return Response({'status' : 'status'}, status=status.HTTP_200_OK)
+        
+        
     
 class ChapterViewSet(viewsets.ModelViewSet):
     """
