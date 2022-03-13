@@ -1,4 +1,5 @@
 from distutils.command.upload import upload
+from email.policy import default
 from tkinter import CASCADE
 from tokenize import Number
 from xml.dom.minidom import CharacterData
@@ -6,15 +7,48 @@ from django.db import models
 from django.dispatch import receiver
 from django.forms import CharField
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
+from PIL import Image
 
+
+def upload_to(instance, filename):
+    return 'images/{filename}'.format(filename=filename)
+    
 
 # Create your models here.
 class Manga(models.Model):
     name = models.CharField(max_length=128)
     author = models.CharField(max_length=128)
     date = models.DateField()
-    is_finished = models.BooleanField()
-    image = models.ImageField(upload_to='images/')
+    is_finished = models.BooleanField(default=False)
+    image = models.ImageField(_('Image'), upload_to=upload_to, default='images/default.jpg')
+    
+    def save(self, *args, **kwargs):
+        super().save()
+        
+        img = Image.open(self.image.path)
+        width, height = img.size  # Get dimensions
+
+        ratio = width/height
+        
+        if ratio < 3/4:
+            new_height = 4*width/3
+            top = (height - new_height)/2
+            bottom = height - top
+            left = 0
+            right = width
+            print(top, bottom)
+            img = img.crop((left, top, right, bottom))
+        elif ratio > 3/4:
+            new_width = 3*height/4
+            top = 0
+            bottom = height
+            left = (width - new_width)/2
+            right = width - left
+            print(left, right)
+            img = img.crop((left, top, right, bottom))
+        
+        img.save(self.image.path)
 
     def __str__(self):
         return self.name
