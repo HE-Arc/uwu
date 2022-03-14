@@ -10,19 +10,19 @@
       <div class="collapse navbar-collapse" id="navbarToggle">
         <div class="navbar-nav me-auto">
           <router-link to="/about" class="nav-link">about</router-link>
+          <router-link to="/user" v-if="this.$store.getters.isLogged" class="nav-link">user</router-link>
         </div>
         
         <div class="navbar-nav">
-          <form v-if="$route.name != 'search'" @submit.prevent="searchPressed" class="me-2">
+          <form v-if="$route.name != 'search'" @submit.prevent="searchPressed" class="mb-2 mb-md-0 me-md-2">
             <div class="input-group">
               <input v-model="query" class="form-control" type="search" placeholder="Search mangas"/>
               <button class="btn btn-primary" type="submit">search</button>
             </div>
           </form>
 
-          <router-link to="/user" v-if="this.$store.getters.isLogged" class="nav-link">user</router-link>
-          <a @click="logOut()" href="#" v-if="this.$store.getters.isLogged" class="nav-link">logout</a>
-          <router-link to="/login" v-else class="nav-link">login</router-link>
+          <button v-on:click="logOut" v-if="this.$store.getters.isLogged" class="btn btn-outline-primary">logout</button>
+          <router-link to="/login" v-else class="btn btn-outline-primary">login</router-link>
         </div>
       </div>
     </div>
