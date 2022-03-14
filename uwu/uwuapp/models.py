@@ -95,6 +95,9 @@ class UwuUser(models.Model):
         
     def remove_chapter(self, chapter):
         self.readed.remove(chapter)
+    
+    def is_fav(self, manga):
+        return manga in self.favorites.all()
 
 class Readed(models.Model):
     user = models.ForeignKey(UwuUser, related_name='readed_user', on_delete=models.CASCADE)

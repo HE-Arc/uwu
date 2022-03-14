@@ -8,6 +8,7 @@ from uwu.uwuapp.serializers import ChapterSerializer, FriendRequestSerializer, U
 from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 from rest_framework.authtoken.models import Token
 from django.db.models import Q
+from django.contrib.auth.models import AnonymousUser
 
 class UwuUserViewSet(viewsets.ModelViewSet):
     """
@@ -83,16 +84,44 @@ class MangaViewSet(viewsets.ModelViewSet):
     filterset_fields = ['is_finished']
     search_fields = ['name', 'author']
     ordering_fields = ['name', 'author', 'date']
-    # from django.core.files.uploadedfile import InMemoryUploadedFile
-    # def create(self, request):  
-    #     data = request.data
-        
-    #     manga = Manga.objects.create(name=data['name'], author=data['author'], date=data['date'], image=data['image'])
-    #     manga.save()
-    #     return Response({'status' : 'status'}, status=status.HTTP_200_OK)
-        
-        
     
+
+    def list(self, request):
+        super_list = super().list(request)
+        
+        if isinstance(request.user, AnonymousUser):
+            return super_list
+
+        user = User.objects.get(username=self.request.user)
+        user_uwu = UwuUser.objects.get(user=user)
+        
+        for r in super_list.data['results']:
+            progress = 0
+            if len(r['chapters']):
+                chapters = user_uwu.readed.all()
+                for c in r['chapters']:
+                    if c.obj in chapters:
+                        progress += 1
+                progress = progress*100/len(r['chapters'])
+                        
+            r['progress'] = progress
+
+
+        return super_list
+    
+    @action(methods=['post'], detail=True)
+    def add_remove_fav(self, request, pk=None):
+        user = User.objects.get(username=request.user)
+        user_uwu = UwuUser.objects.get(user=user)
+        manga = Manga.objects.get(pk=pk)
+        
+        if not user_uwu.is_fav(manga):
+            user_uwu.favorites.add(manga)
+            return Response({'status':f'The manga has been added to the {user}\'s favorites'}, status=status.HTTP_200_OK)
+        else:
+            user_uwu.favorites.remove(manga)
+            return Response({'status':f'The manga has removed added from the {user}\'s favorites'}, status=status.HTTP_200_OK)
+         
     
     
 class ChapterViewSet(viewsets.ModelViewSet):
@@ -114,11 +143,11 @@ class ChapterViewSet(viewsets.ModelViewSet):
         chapter = Chapter.objects.get(pk=pk)
         
         if not user_uwu.is_readed(chapter):
-            user_uwu.add_chapter(chapter)
+            user_uwu.readed.add(chapter)
         
             return Response({'status':f'The chapter has been added to the {user}\'s readed chapter'}, status=status.HTTP_200_OK)
         else:
-            user_uwu.remove_chapter(chapter)
+            user_uwu.readed.remove(chapter)
             return Response({'status':f'The chapter has been removed from the {user}\'s readed chapter'}, status=status.HTTP_200_OK)
         
         
@@ -130,8 +159,8 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated ]
     
     def create(self, request):
-        
-        sender = Token.objects.get(key = request.data['Token']).user
+        print(self.request.user)
+        sender = User.objects.get(username=request.user)
         
         try:
             receiver = User.objects.get(pk = request.data['other_user'])
@@ -199,7 +228,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
                             },
                             status=status.HTTP_400_BAD_REQUEST)
         
-        user = Token.objects.get(key=request.data['Token']).user
+        user = User.objects.get(username=request.user)
         receiver = friend_request.receiver
         
         if not user == receiver:
