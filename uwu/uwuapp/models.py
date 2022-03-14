@@ -1,11 +1,6 @@
-from distutils.command.upload import upload
-from email.policy import default
-from tkinter import CASCADE
-from tokenize import Number
 from xml.dom.minidom import CharacterData
 from django.db import models
 from django.dispatch import receiver
-from django.forms import CharField
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from PIL import Image
@@ -62,19 +57,20 @@ class Chapter(models.Model):
     def __str__(self):
         return f'{self.order}: {self.title}'
 
+
+
 class UwuUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
 
     friends = models.ManyToManyField(User, blank=True, related_name='friends')
     favorites = models.ManyToManyField(Manga, blank=True, related_name='favorites') 
-    readed = models.ManyToManyField(Chapter, blank=True, related_name='readed') 
+    readed = models.ManyToManyField(Chapter, blank=True, related_name='readed', through='Readed') 
 
     def __str__(self):
         return str(self.user)
     
     def add_friend(self, other_user):
         self.friends.add(other_user)
-    
     
     def remove_friend(self, other_user):
         """
@@ -89,9 +85,24 @@ class UwuUser(models.Model):
         """
         Is this user friend with the 'other_user'?
         """
-        if other_user in self.friends:
-            return True
-        return False
+        return other_user in self.friends.all()
+    
+    def is_readed(self, chapter):
+        return chapter in self.readed.all()
+    
+    def add_chapter(self, chapter):
+        self.readed.add(chapter)
+        
+    def remove_chapter(self, chapter):
+        self.readed.remove(chapter)
+
+class Readed(models.Model):
+    user = models.ForeignKey(UwuUser, related_name='readed_user', on_delete=models.CASCADE)
+    chapter = models.ForeignKey(Chapter, related_name='chapter', on_delete=models.CASCADE)
+    created = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return str(self.user)
 
 class FriendRequest(models.Model):
     """

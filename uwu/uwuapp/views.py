@@ -1,8 +1,7 @@
-
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, permissions, filters, status
+from rest_framework import viewsets, permissions, filters, status, serializers
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from uwu.uwuapp.serializers import ChapterSerializer, FriendRequestSerializer, UwuUserSerializer, MangaSerializer, UserSerializer
@@ -23,20 +22,20 @@ class UwuUserViewSet(viewsets.ModelViewSet):
         Unfriendinmg someone from the 'friends'
         """       
 
-        user = UwuUser.objects.get(pk=pk)
+        user_uwu = UwuUser.objects.get(pk=pk)
         other_user = UwuUser.objects.get(user=request.data['other_user'])
         
-        if other_user.user in user.friends.all():
-            user.remove_friend(other_user.user)
-            other_user.remove_friend(user.user)
+        if user_uwu.is_friend(other_user):
+            user_uwu.remove_friend(other_user.user)
+            other_user.remove_friend(user_uwu.user)
             return Response({
-                                'status' : f'{user} and {other_user} are not friend anymore',
+                                'status' : f'{user_uwu} and {other_user} are not friend anymore',
                                 'code':status.HTTP_200_OK
                             }, 
                             status=status.HTTP_200_OK)
         else:
             return Response({
-                                'status' : f'{user} and {other_user} are already not friend',
+                                'status' : f'{user_uwu} and {other_user} are already not friend',
                                 'code':status.HTTP_400_BAD_REQUEST
                             }, 
                             status=status.HTTP_400_BAD_REQUEST)
@@ -94,12 +93,36 @@ class MangaViewSet(viewsets.ModelViewSet):
         
         
     
+    
+    
 class ChapterViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows chapters to be viewed or edited.
     """
     queryset = Chapter.objects.all().order_by('-order')
     serializer_class = ChapterSerializer
+    
+    @action(methods=['post'], detail=True)
+    def add_remove_to_read(self, request, pk=None):
+        '''
+        add or reamove the chapter in the user's readed chapter
+        '''
+        
+        user = User.objects.get(username=request.user)
+        user_uwu = UwuUser.objects.get(user=user)
+        
+        chapter = Chapter.objects.get(pk=pk)
+        
+        if not user_uwu.is_readed(chapter):
+            user_uwu.add_chapter(chapter)
+        
+            return Response({'status':f'The chapter has been added to the {user}\'s readed chapter'}, status=status.HTTP_200_OK)
+        else:
+            user_uwu.remove_chapter(chapter)
+            return Response({'status':f'The chapter has been removed from the {user}\'s readed chapter'}, status=status.HTTP_200_OK)
+        
+        
+        
     
 class FriendRequestViewSet(viewsets.ModelViewSet):
     queryset = FriendRequest.objects.all().order_by('-timestamp')
@@ -123,7 +146,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
            
         sender_uwu = UwuUser.objects.get(user = sender)    
-        if receiver in sender_uwu.friends.all():
+        if sender_uwu.is_friend(receiver):
             return Response({
                                 'status' : f'{sender} and {receiver} are already friend',
                                 'code':status.HTTP_400_BAD_REQUEST
@@ -208,7 +231,6 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
     @action(detail=False)
     def get_active_friend_request(self, request):
         
-
         user = User.objects.get(username=request.user)
         
         friend_requests = FriendRequest.objects.all().filter(receiver=user).order_by('-timestamp')
