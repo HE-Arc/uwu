@@ -6,6 +6,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ['url', 'username', 'password', 'pk']
+        
 
 class UwuUserSerializer(serializers.HyperlinkedModelSerializer):
     username = serializers.CharField(source='user.username')
@@ -13,8 +14,7 @@ class UwuUserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = UwuUser
         fields = ['url', 'username', 'friends', 'favorites', 'readed']
-        
-        
+              
 
 class MangaSerializer(serializers.HyperlinkedModelSerializer):
     chapters = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='chapter-detail')
