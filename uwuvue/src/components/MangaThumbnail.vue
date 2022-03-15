@@ -1,6 +1,6 @@
 <template>
   <div>
-    <router-link v-bind:to="'/mangas/' + manga.id">
+    <router-link v-bind:to="'/mangas/' + manga.pk">
       <img v-bind:src="manga.image" class="img-fluid rounded mb-3"/>
     </router-link>
 
