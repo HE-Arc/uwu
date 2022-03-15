@@ -12,6 +12,16 @@ export default createStore({
 
     headerToken(state) {
       return `Token ${state.token}`
+    },
+
+    header(state, getters) {
+      if (getters.isLogged) {
+        return {
+          Authorization: getters.headerToken
+        }
+      }
+
+      return {}
     }
   },
 

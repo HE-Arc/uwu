@@ -20,7 +20,11 @@ class Migration(migrations.Migration):
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='readed_user', to='uwuapp.uwuuser')),
             ],
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
+            model_name='uwuuser',
+            name='readed',
+        ),
+        migrations.AddField(
             model_name='uwuuser',
             name='readed',
             field=models.ManyToManyField(blank=True, related_name='readed', through='uwuapp.Readed', to='uwuapp.Chapter'),

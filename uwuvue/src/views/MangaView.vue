@@ -20,8 +20,13 @@ export default {
   },
 
   created() {
-      api.get('/mangas/')
+      api.get('/mangas/', {
+        headers: {
+          Authorization: this.$store.getters.headerToken
+        }
+      })
       .then(response => {
+        print(response.data.results)
         this.mangas = response.data.results
       })
       .catch(error => {

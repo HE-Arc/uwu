@@ -16,13 +16,7 @@
 
   <div v-if="mangas.length > 0 || loading" class="row">
     <div v-for="(manga, index) in mangas" :key="index" class="col-6 col-md-3 col-lg-2">
-      <div class="image">
-        <router-link v-bind:to="'/mangas/' + manga.id">
-          <img v-bind:src="manga.image" class="img-fluid rounded"/>
-        </router-link>
-
-        <p class="p-1">{{manga.name}}</p>
-      </div>
+      <manga-thumbnail :manga="manga"/>
     </div>
   </div>
 
@@ -34,8 +28,14 @@
 <script>
 import api from '@/api'
 
+import MangaThumbnail from '@/components/MangaThumbnail.vue'
+
 export default {
   name : 'SearchView',
+
+  components: {
+    MangaThumbnail
+  },
 
   data() {
     return {
@@ -72,9 +72,12 @@ export default {
       api.get('/mangas/', {
         params: {
           search: this.$route.params.query
-        }
+        },
+
+        headers: this.$store.getters.header
       })
       .then(response => {
+        console.log(response.data.results)
         this.mangas = response.data.results
         this.loading = false
       })
