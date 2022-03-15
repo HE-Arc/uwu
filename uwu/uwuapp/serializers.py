@@ -22,7 +22,7 @@ class MangaSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Manga
-        fields = ['url', 'name', 'author', 'date', 'isFinished', 'chapters', 'image']
+        fields = ['url', 'name', 'author', 'date', 'isFinished', 'chapters', 'image', 'pk']
         
 class ChapterSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
