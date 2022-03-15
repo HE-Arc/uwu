@@ -16,18 +16,18 @@ class UwuUserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'username', 'friends', 'favorites', 'readed']
               
 
+class ChapterSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Chapter
+        fields = ['url', 'manga_id', 'order', 'title', 'page_nb']
+
 class MangaSerializer(serializers.HyperlinkedModelSerializer):
-    chapters = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='chapter-detail')
+    chapters = ChapterSerializer(many=True, read_only=True)
     isFinished = serializers.BooleanField(source='is_finished')
     
     class Meta:
         model = Manga
         fields = ['url', 'name', 'author', 'date', 'isFinished', 'chapters', 'image', 'pk']
-        
-class ChapterSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Chapter
-        fields = ['url', 'manga_id', 'order', 'title', 'page_nb']
         
         
 class FriendRequestSerializer(serializers.HyperlinkedModelSerializer):

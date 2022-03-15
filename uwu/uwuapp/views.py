@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, permissions, filters, status, serializers
+from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from uwu.uwuapp.serializers import ChapterSerializer, FriendRequestSerializer, UwuUserSerializer, MangaSerializer, UserSerializer
@@ -101,8 +101,11 @@ class MangaViewSet(viewsets.ModelViewSet):
             if len(r['chapters']):
                 chapters = user_uwu.readed.all()
                 for c in r['chapters']:
-                    if c.obj in chapters:
+                    if c['url'].obj in chapters:
                         progress += 1
+                        c['isReaded'] = True
+                    else:
+                        c['isReaded'] = False
                 progress = progress*100/len(r['chapters'])
                         
             r['progress'] = progress
