@@ -26,7 +26,7 @@ export default {
         }
       })
       .then(response => {
-        print(response.data.results)
+        console.log(response.data.results)
         this.mangas = response.data.results
       })
       .catch(error => {

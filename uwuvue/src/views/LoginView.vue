@@ -60,7 +60,7 @@ export default {
           token: response.data.token
         })
 
-        this.$router.push({ name: 'home' })
+        this.$router.go(-1)
         this.loading = false
       })
       .catch(() => {
@@ -72,7 +72,7 @@ export default {
 
   created() {
     if (this.$store.getters.isLogged) {
-      this.$router.push({ name: 'home' })
+      this.$router.go(-1)
     }
   }
 }
