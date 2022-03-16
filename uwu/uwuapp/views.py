@@ -96,17 +96,19 @@ class MangaViewSet(viewsets.ModelViewSet):
         user = User.objects.get(username=self.request.user)
         user_uwu = UwuUser.objects.get(user=user)
         
+
         progress = 0
         
-        for c in super_retrieve.data['chapters']:
-            chapters = user_uwu.readed.all()
-            if c['url'].obj in chapters:
-                c['isReaded'] = True
-                progress += 1
-            else:
-                c['isReaded'] = False
-                
-        progress = progress*100/len(super_retrieve.data['chapters'])
+        if len(super_retrieve.data['chapters']) > 0:
+            for c in super_retrieve.data['chapters']:
+                chapters = user_uwu.readed.all()
+                if c['url'].obj in chapters:
+                    c['isReaded'] = True
+                    progress += 1
+                else:
+                    c['isReaded'] = False
+                    
+            progress = progress*100/len(super_retrieve.data['chapters'])
         
         super_retrieve.data['progress'] = progress
 
