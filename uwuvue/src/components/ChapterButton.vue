@@ -1,7 +1,9 @@
 <template>
   <div class="d-grid">
-    <button class="btn btn-primary square">
-      {{chapter}}
+    <button v-on:click="toggle" class="btn btn-primary overflow-hidden">
+      <h2>1</h2>
+      
+      <p class="small">{{chapter}}</p>
     </button>
   </div>
 </template>
@@ -15,6 +17,9 @@ export default {
   },
 
   methods: {
+    toggle() {
+      
+    }
   }
 }
 </script>

@@ -5,7 +5,8 @@
     </router-link>
 
     <div v-if="manga.progress && manga.progress > 0" class="progress">
-      <div v-bind:style="progressStyle()" class="progress-bar bg-info" role="progressbar"/>
+      <div v-if="manga.progress == 100" v-bind:style="progressStyle()" class="progress-bar bg-primary" role="progressbar"/>
+      <div v-else v-bind:style="progressStyle()" class="progress-bar bg-info" role="progressbar"/>
     </div>
 
     <p class="p-1">{{manga.name}}</p>
