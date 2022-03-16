@@ -23,6 +23,10 @@
   <div v-else class="row">
     <div class="alert alert-primary col-lg-6" role="alert">No result</div>
   </div>
+
+  <button v-on:click="moreResult" v-if="next" class="btn btn-primary">
+    more results
+  </button>
 </template>
 
 <script>
@@ -41,7 +45,8 @@ export default {
     return {
       mangas: [],
       query: this.$route.params.query,
-      loading: false
+      loading: false,
+      next: null
     }
   },
 
@@ -77,8 +82,24 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        console.log(response.data.results)
         this.mangas = response.data.results
+        this.next = response.data.next
+        this.loading = false
+      })
+      .catch(() =>
+        this.loading = false
+      )
+    },
+
+    moreResult() {
+      this.loading = true
+
+      api.get(this.next, {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        this.mangas.push.apply(this.mangas, response.data.results)
+        this.next = response.data.next
         this.loading = false
       })
       .catch(() =>
