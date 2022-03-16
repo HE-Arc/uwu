@@ -1,17 +1,17 @@
 <template>
   <div class="row">
     <div class="col-4 col-md-2">
-      <img v-bind:src="manga.image" class="img-fluid rounded mb-3"/>
+      <img v-bind:src="manga.image" class="img-fluid rounded mb-4"/>
     </div>
 
-    <div class="col">
+    <div class="col mb-4">
       <h1 class="text-primary">{{manga.name}}</h1>
       <p>{{manga.author}}</p>
       <p>{{manga.date}}</p>
     </div>
   </div>
 
-  <div class="row mb-3">
+  <div class="row mb-4">
     <div class="col">
       <div v-if="manga.progress != null" class="progress">
         <div v-bind:class="progressClass" v-bind:style="progressStyle" class="progress-bar" role="progressbar"/>
@@ -19,8 +19,8 @@
     </div>
   </div>
 
-  <div v-if="manga.chapters.length > 0" class="row">
-    <div v-for="(chapter, index) in manga.chapters" :key="index" class="col-4 col-md-3 col-lg-2">
+  <div v-if="manga.chapters.length > 0" class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4">
+    <div v-for="(chapter, index) in manga.chapters" :key="index" class="col">
       <chapter-button :chapter="chapter" v-on:toggle="fetch"/>
     </div>
   </div>
