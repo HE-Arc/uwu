@@ -87,6 +87,32 @@ class MangaViewSet(viewsets.ModelViewSet):
     ordering_fields = ['name', 'author', 'date']
     
 
+    def retrieve(self, request, *args, **kwargs):
+        super_retrieve = super().retrieve(request, *args, **kwargs)
+        
+        if isinstance(request.user, AnonymousUser):
+            return super_retrieve
+
+        user = User.objects.get(username=self.request.user)
+        user_uwu = UwuUser.objects.get(user=user)
+        print(super_retrieve.__dict__)
+        
+        progress = 0
+        
+        for c in super_retrieve.data['chapters']:
+            chapters = user_uwu.readed.all()
+            if c['url'].obj in chapters:
+                c['isReaded'] = True
+                progress += 1
+            else:
+                c['isReaded'] = False
+                
+        progress = progress*100/len(super_retrieve.data['chapters'])
+        
+        super_retrieve.data['progress'] = progress
+
+        return super_retrieve
+
     def list(self, request):
         super_list = super().list(request)
         

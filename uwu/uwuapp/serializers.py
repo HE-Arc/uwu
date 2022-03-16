@@ -19,7 +19,7 @@ class UwuUserSerializer(serializers.HyperlinkedModelSerializer):
 class ChapterSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Chapter
-        fields = ['url', 'manga_id', 'order', 'title', 'page_nb']
+        fields = ['url', 'manga_id', 'order', 'title', 'page_nb', 'pk']
 
 class MangaSerializer(serializers.HyperlinkedModelSerializer):
     chapters = ChapterSerializer(many=True, read_only=True)
@@ -27,7 +27,7 @@ class MangaSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Manga
-        fields = ['url', 'name', 'author', 'date', 'isFinished', 'chapters', 'image', 'pk']
+        fields = ['url', 'name', 'author', 'description', 'date', 'isFinished', 'chapters', 'image', 'pk']
         
         
 class FriendRequestSerializer(serializers.HyperlinkedModelSerializer):

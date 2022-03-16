@@ -14,6 +14,7 @@ def upload_to(instance, filename):
 class Manga(models.Model):
     name = models.CharField(max_length=128)
     author = models.CharField(max_length=128)
+    description = models.TextField(default='Description coming soon')
     date = models.DateField()
     is_finished = models.BooleanField(default=False)
     image = models.ImageField(_('Image'), upload_to=upload_to, default='images/default.jpg')
