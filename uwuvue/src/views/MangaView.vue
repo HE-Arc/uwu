@@ -11,16 +11,17 @@
     </div>
   </div>
 
-  <div class="row">
-    <div v-if="manga.progress && manga.progress > 0" class="progress">
-      <div v-if="manga.progress == 100" v-bind:style="progressStyle()" class="progress-bar bg-info progress-bar-striped" role="progressbar"/>
-      <div v-else v-bind:style="progressStyle()" class="progress-bar bg-info" role="progressbar"/>
+  <div class="row mb-3">
+    <div class="col">
+      <div v-if="manga.progress != null" class="progress">
+        <div v-bind:class="progressClass" v-bind:style="progressStyle" class="progress-bar" role="progressbar"/>
+      </div>
     </div>
   </div>
 
   <div v-if="manga.chapters.length > 0" class="row">
     <div v-for="(chapter, index) in manga.chapters" :key="index" class="col-4 col-md-3 col-lg-2">
-      <chapter-button :chapter="chapter"/>
+      <chapter-button :chapter="chapter" v-on:toggle="fetch"/>
     </div>
   </div>
 </template>
@@ -44,6 +45,25 @@ export default {
   },
 
   created() {
+    this.fetch()
+  },
+
+  computed: {
+    progressStyle: function() {
+      return 'width: ' + this.manga.progress + '%'
+    },
+
+    progressClass: function() {
+      if (this.manga.progress == 100) {
+        return 'bg-primary'
+      }
+
+      return 'bg-info'
+    }
+  },
+
+  methods: {
+    fetch() {
       api.get(`/mangas/${this.$route.params.id}/`, {
         headers: this.$store.getters.header
       })
@@ -54,6 +74,7 @@ export default {
       .catch(error => {
         console.log(error)
       })
+    }
   }
 }
 </script>

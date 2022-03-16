@@ -15,7 +15,7 @@
       </div>
 
       <button class="btn btn-primary mb-2" type="button" disabled v-if="loading">
-        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        <span class="spinner-border spinner-border-sm" role="status"></span>
         loading...
       </button>
       <button type="submit" class="btn btn-primary mb-2" v-else>login</button>
