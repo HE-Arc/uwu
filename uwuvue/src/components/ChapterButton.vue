@@ -1,6 +1,6 @@
 <template>
   <div class="d-grid">
-    <button v-on:click="toggle" v-bind:class="buttonClass" :disabled="loading" class="btn overflow-hidden">
+    <button v-on:click="toggle" v-bind:class="buttonClass" :disabled="loading || !$store.getters.isLogged" class="btn overflow-hidden">
       <span v-if="loading" class="spinner-border" role="status"/>
       <h2 v-else>{{chapter.order}}</h2>
       
