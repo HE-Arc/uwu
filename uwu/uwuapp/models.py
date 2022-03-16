@@ -1,6 +1,4 @@
-from xml.dom.minidom import CharacterData
 from django.db import models
-from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from PIL import Image
@@ -8,6 +6,29 @@ from PIL import Image
 
 def upload_to(instance, filename):
     return 'images/{filename}'.format(filename=filename)
+
+def resize(wanted_ratio, img):
+    width, height = img.size  # Get dimensions
+
+    ratio = width/height
+    
+    if ratio < wanted_ratio:
+        new_height = width/wanted_ratio
+        top = (height - new_height)/2
+        bottom = height - top
+        left = 0
+        right = width
+        img = img.crop((left, top, right, bottom))
+    elif ratio > wanted_ratio:
+        new_width = height * wanted_ratio
+        top = 0
+        bottom = height
+        left = (width - new_width)/2
+        right = width - left
+        img = img.crop((left, top, right, bottom))
+    
+    return img
+    
     
 
 # Create your models here.
@@ -22,29 +43,13 @@ class Manga(models.Model):
     def save(self, *args, **kwargs):
         super().save()
         
+        wanted_ratio = 3/4
         img = Image.open(self.image.path)
-        width, height = img.size  # Get dimensions
-
-        ratio = width/height
         
-        if ratio < 3/4:
-            new_height = 4*width/3
-            top = (height - new_height)/2
-            bottom = height - top
-            left = 0
-            right = width
-            print(top, bottom)
-            img = img.crop((left, top, right, bottom))
-        elif ratio > 3/4:
-            new_width = 3*height/4
-            top = 0
-            bottom = height
-            left = (width - new_width)/2
-            right = width - left
-            print(left, right)
-            img = img.crop((left, top, right, bottom))
+        img = resize(wanted_ratio, img)
         
         img.save(self.image.path)
+        
 
     def __str__(self):
         return self.name
@@ -62,10 +67,22 @@ class Chapter(models.Model):
 
 class UwuUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
+    
+    image = models.ImageField(_('Image'), upload_to=upload_to, default='images/default_user.png')
 
     friends = models.ManyToManyField(User, blank=True, related_name='friends')
     favorites = models.ManyToManyField(Manga, blank=True, related_name='favorites') 
     readed = models.ManyToManyField(Chapter, blank=True, related_name='readed', through='Readed') 
+
+    def save(self, *args, **kwargs):
+        super().save()
+        
+        img = Image.open(self.image.path)
+        wanted_ratio = 1
+        
+        img = resize(wanted_ratio, img)
+        
+        img.save(self.image.path)
 
     def __str__(self):
         return str(self.user)

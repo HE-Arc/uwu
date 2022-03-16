@@ -13,7 +13,7 @@ class UwuUserSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = UwuUser
-        fields = ['url', 'username', 'friends', 'favorites', 'readed']
+        fields = ['url', 'username', 'friends', 'favorites', 'readed', 'image']
               
 
 class ChapterSerializer(serializers.HyperlinkedModelSerializer):

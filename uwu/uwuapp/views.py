@@ -95,7 +95,6 @@ class MangaViewSet(viewsets.ModelViewSet):
 
         user = User.objects.get(username=self.request.user)
         user_uwu = UwuUser.objects.get(user=user)
-        print(super_retrieve.__dict__)
         
         progress = 0
         
@@ -158,7 +157,7 @@ class ChapterViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows chapters to be viewed or edited.
     """
-    queryset = Chapter.objects.all().order_by('-order')
+    queryset = Chapter.objects.all().order_by('order')
     serializer_class = ChapterSerializer
     
     @action(methods=['post'], detail=True)
@@ -189,7 +188,6 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated ]
     
     def create(self, request):
-        print(self.request.user)
         sender = User.objects.get(username=request.user)
         
         try:
