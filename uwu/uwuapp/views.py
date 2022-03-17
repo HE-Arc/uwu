@@ -87,8 +87,11 @@ class MangaViewSet(viewsets.ModelViewSet):
     ordering_fields = ['name', 'author', 'date']
     
 
+
     def retrieve(self, request, *args, **kwargs):
         super_retrieve = super().retrieve(request, *args, **kwargs)
+        
+        chapters = super_retrieve.data['chapters']
         
         if isinstance(request.user, AnonymousUser):
             return super_retrieve
@@ -99,16 +102,16 @@ class MangaViewSet(viewsets.ModelViewSet):
 
         progress = 0
         
-        if len(super_retrieve.data['chapters']) > 0:
-            for c in super_retrieve.data['chapters']:
-                chapters = user_uwu.readed.all()
-                if c['url'].obj in chapters:
+        if len(chapters) > 0:
+            for c in chapters:
+                readed_chapters = user_uwu.readed.all()
+                if c['url'].obj in readed_chapters:
                     c['isReaded'] = True
                     progress += 1
                 else:
                     c['isReaded'] = False
                     
-            progress = progress*100/len(super_retrieve.data['chapters'])
+            progress = progress*100/len(chapters)
         
         super_retrieve.data['progress'] = progress
 
@@ -161,6 +164,12 @@ class ChapterViewSet(viewsets.ModelViewSet):
     """
     queryset = Chapter.objects.all().order_by('order')
     serializer_class = ChapterSerializer
+    
+    def update(self, request, *args, **kwargs):
+        print('uwu')
+        
+    def list():
+        print('ouaf')
     
     @action(methods=['post'], detail=True)
     def add_remove_to_read(self, request, pk=None):

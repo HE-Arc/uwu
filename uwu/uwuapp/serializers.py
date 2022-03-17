@@ -1,7 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
-from django.core import serializers as core_serializers
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -18,27 +17,20 @@ class UwuUserSerializer(serializers.HyperlinkedModelSerializer):
               
 
 class ChapterSerializer(serializers.HyperlinkedModelSerializer):
-    
     class Meta:
         model = Chapter
         fields = ['url', 'manga_id', 'order', 'title', 'page_nb', 'pk']
         
     
-        
 
 class MangaSerializer(serializers.HyperlinkedModelSerializer):
-    
-    chapters = serializers.SerializerMethodField()
+    chapters = ChapterSerializer(many=True, read_only=True)
     isFinished = serializers.BooleanField(source='is_finished')
     
     class Meta:
         model = Manga
         fields = ['url', 'name', 'author', 'description', 'date', 'created', 'updated', 'isFinished', 'chapters', 'image', 'pk']
-    
-    def get_chapters(self, instance):
-        chapters_set = instance.chapters.all().order_by('order')
-        print(core_serializers.serialize("json", chapters_set))
-        return chapters_set.values()    
+        
         
 class FriendRequestSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
