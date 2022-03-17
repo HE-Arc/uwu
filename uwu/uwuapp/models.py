@@ -63,6 +63,9 @@ class Chapter(models.Model):
     page_nb = models.IntegerField()
     order = models.IntegerField()
 
+    def save(self, *args, **kwargs):
+        self.manga_id.save()
+        
     def __str__(self):
         return f'{self.order}: {self.title}'
 

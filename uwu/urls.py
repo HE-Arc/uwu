@@ -32,8 +32,8 @@ router.register(r'friend-requests', views.FriendRequestViewSet)
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('api/v1/', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('admin/', admin.site.urls),
+    path('api/v1/api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/admin/', admin.site.urls),
     path('api/v1/auth/', obtain_auth_token, name='api_token_auth'),
 ]
 

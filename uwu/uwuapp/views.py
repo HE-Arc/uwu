@@ -4,6 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from uwu.uwuapp import serializers
 from uwu.uwuapp.serializers import ChapterSerializer, FriendRequestSerializer, UwuUserSerializer, MangaSerializer, UserSerializer
 from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 from rest_framework.authtoken.models import Token
@@ -79,7 +80,7 @@ class MangaViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows mangas to be viewed or edited.
     """
-    queryset = Manga.objects.all().order_by('created')
+    queryset = Manga.objects.all().order_by('-updated')
     serializer_class = MangaSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ['is_finished']
@@ -87,16 +88,37 @@ class MangaViewSet(viewsets.ModelViewSet):
     ordering_fields = ['name', 'author', 'date']
     
 
-
+    @action(detail=True)
+    def get_chapters(self, request, pk=None):
+        context = {'request':request}
+        queryset = Chapter.objects.all().filter(manga_id=pk).order_by('order')
+        serializer = ChapterSerializer(queryset, many=True, context=context)
+        
+        if len(serializer.data) > 0:
+            user = self.request.user
+            if not isinstance(user, AnonymousUser):
+                user_uwu = UwuUser.objects.get(user=user)
+                for c in serializer.data:
+                    readed_chapters = user_uwu.readed.all()
+                    if c['url'].obj in readed_chapters:
+                        c['isReaded'] = True
+                    else:
+                        c['isReaded'] = False
+                
+        return Response(serializer.data)
+        
+        
+    
     def retrieve(self, request, *args, **kwargs):
         super_retrieve = super().retrieve(request, *args, **kwargs)
+        print(type(super_retrieve))
         
         chapters = super_retrieve.data['chapters']
         
         if isinstance(request.user, AnonymousUser):
             return super_retrieve
 
-        user = User.objects.get(username=self.request.user)
+        user = self.request.user
         user_uwu = UwuUser.objects.get(user=user)
         
 
@@ -123,7 +145,7 @@ class MangaViewSet(viewsets.ModelViewSet):
         if isinstance(request.user, AnonymousUser):
             return super_list
 
-        user = User.objects.get(username=self.request.user)
+        user = self.request.user
         user_uwu = UwuUser.objects.get(user=user)
         
         for r in super_list.data['results']:
@@ -164,12 +186,6 @@ class ChapterViewSet(viewsets.ModelViewSet):
     """
     queryset = Chapter.objects.all().order_by('order')
     serializer_class = ChapterSerializer
-    
-    def update(self, request, *args, **kwargs):
-        print('uwu')
-        
-    def list():
-        print('ouaf')
     
     @action(methods=['post'], detail=True)
     def add_remove_to_read(self, request, pk=None):

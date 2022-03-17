@@ -24,7 +24,7 @@ class ChapterSerializer(serializers.HyperlinkedModelSerializer):
     
 
 class MangaSerializer(serializers.HyperlinkedModelSerializer):
-    chapters = ChapterSerializer(many=True, read_only=True)
+    chapters = serializers.HyperlinkedIdentityField(view_name='chapter-detail', many=True)
     isFinished = serializers.BooleanField(source='is_finished')
     
     class Meta:
