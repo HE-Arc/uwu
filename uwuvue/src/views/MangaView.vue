@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col-4 col-md-2">
-      <img v-bind:src="manga.image" class="img-fluid rounded mb-4"/>
+      <img :src="manga.image" class="img-fluid rounded mb-4"/>
     </div>
 
     <div class="col mb-4">
@@ -14,7 +14,7 @@
   <div class="row mb-4">
     <div class="col">
       <div v-if="manga.progress != null" class="progress">
-        <div v-bind:class="progressClass" v-bind:style="progressStyle" class="progress-bar" role="progressbar"/>
+        <div :class="progressClass" :style="progressStyle" class="progress-bar" role="progressbar"/>
       </div>
     </div>
   </div>
