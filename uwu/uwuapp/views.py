@@ -79,7 +79,7 @@ class MangaViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows mangas to be viewed or edited.
     """
-    queryset = Manga.objects.all().order_by('-pk').reverse()
+    queryset = Manga.objects.all().order_by('created')
     serializer_class = MangaSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ['is_finished']

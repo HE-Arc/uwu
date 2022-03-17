@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from PIL import Image
+from datetime import datetime
 
 
 def upload_to(instance, filename):
@@ -39,6 +40,8 @@ class Manga(models.Model):
     date = models.DateField()
     is_finished = models.BooleanField(default=False)
     image = models.ImageField(_('Image'), upload_to=upload_to, default='images/default.jpg')
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
     
     def save(self, *args, **kwargs):
         super().save()
