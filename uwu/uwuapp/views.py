@@ -111,7 +111,6 @@ class MangaViewSet(viewsets.ModelViewSet):
     
     def retrieve(self, request, *args, **kwargs):
         super_retrieve = super().retrieve(request, *args, **kwargs)
-        print(type(super_retrieve))
         
         chapters = super_retrieve.data['chapters']
         
@@ -153,11 +152,8 @@ class MangaViewSet(viewsets.ModelViewSet):
             if len(r['chapters']):
                 chapters = user_uwu.readed.all()
                 for c in r['chapters']:
-                    if c['url'].obj in chapters:
+                    if c in chapters:
                         progress += 1
-                        c['isReaded'] = True
-                    else:
-                        c['isReaded'] = False
                 progress = progress*100/len(r['chapters'])
                         
             r['progress'] = progress
@@ -186,6 +182,20 @@ class ChapterViewSet(viewsets.ModelViewSet):
     """
     queryset = Chapter.objects.all().order_by('order')
     serializer_class = ChapterSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        super_retrieve = super().retrieve(request, *args, **kwargs)
+        
+        if isinstance(request.user, AnonymousUser):
+            return super_retrieve
+        
+        user_uwu = UwuUser.objects.get(user=request.user)
+        
+        if Chapter.objects.get(pk=super_retrieve.data['pk']) in user_uwu.readed.all():
+            super_retrieve.data['isReaded'] = True
+        else:
+            super_retrieve.data['isReaded'] = False
+        return super_retrieve
     
     @action(methods=['post'], detail=True)
     def add_remove_to_read(self, request, pk=None):
