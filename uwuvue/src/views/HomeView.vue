@@ -1,7 +1,9 @@
 <template>
   <h1 class="text-primary">uwu</h1>
 
-  <div v-if="mangas.length > 0 || loading" class="row">
+  <h2>Recently updated</h2>
+
+  <div v-if="mangas.length > 0 || loading" class="row mt-4">
     <div v-for="(manga, index) in mangas" :key="index" class="col-6 col-md-3 col-lg-2">
       <manga-thumbnail :manga="manga"/>
     </div>

@@ -3,7 +3,7 @@
     <div class="container-fluid">
       <router-link to="/" class="navbar-brand text-primary" v-on:click="hideNavBar">uwu</router-link>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" id="lol">
         <span class="navbar-toggler-icon"/>
       </button>
 
@@ -21,7 +21,7 @@
             </div>
           </form>
 
-          <button v-on:click="logOut" v-if="this.$store.getters.isLogged" class="btn btn-outline-primary">logout</button>
+          <button v-on:click="logOut" v-if="this. $store.getters.isLogged" class="btn btn-outline-primary">logout</button>
           <router-link to="/login" v-else class="btn btn-outline-primary" v-on:click="hideNavBar">login</router-link>
         </div>
       </div>
@@ -37,14 +37,13 @@ export default {
 
   data() {
     return {
-      query: '',
-      collapse: null
+      query: ''
     }
   },
 
   mounted() {
     let navbar = document.getElementById('navbarCollapse')
-    this.collapse = new Collapse(navbar)
+    this.collapse = new Collapse(navbar, { toggle: false })
   },
 
   methods: {
