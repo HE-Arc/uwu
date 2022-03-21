@@ -41,7 +41,7 @@ export default {
 
   methods: {
     toggle() {
-      if (!this.store.getters.isLogged) {
+      if (!this.$store.getters.isLogged) {
         return false
       }
 
