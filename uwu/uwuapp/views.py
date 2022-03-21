@@ -149,7 +149,7 @@ class MangaViewSet(viewsets.ModelViewSet):
             if len(r['chapters']):
                 chapters = user_uwu.readed.all()
                 for c in r['chapters']:
-                    if c in chapters:
+                    if c.obj in chapters:
                         progress += 1
                 progress = progress*100/len(r['chapters'])
                         
