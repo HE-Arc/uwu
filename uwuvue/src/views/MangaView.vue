@@ -19,8 +19,8 @@
     </div>
   </div>
 
-  <div v-if="manga.chapters.length > 0" class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4">
-    <div v-for="(chapter, index) in manga.chapters" :key="index" class="col">
+  <div v-if="chapters.length > 0" class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4">
+    <div v-for="(chapter, index) in chapters" :key="index" class="col">
       <chapter-button :chapter="chapter" v-on:toggle="fetch"/>
     </div>
   </div>
@@ -40,7 +40,8 @@ export default {
 
   data() {
     return {
-      manga: {}
+      manga: {},
+      chapters: {}
     }
   },
 
@@ -68,8 +69,17 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        console.log(response.data)
         this.manga = response.data
+      })
+      .catch(error => {
+        console.log(error)
+      })
+
+      api.get(`/mangas/${this.$route.params.id}/get_chapters/`, {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        this.chapters = response.data
       })
       .catch(error => {
         console.log(error)

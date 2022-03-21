@@ -1,33 +1,80 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <h1 class="text-primary">uwu</h1>
+
+  <h2>Recently updated</h2>
+
+  <div v-if="mangas.length > 0 || loading" class="row mt-4">
+    <div v-for="(manga, index) in mangas" :key="index" class="col-6 col-md-3 col-lg-2">
+      <manga-thumbnail :manga="manga"/>
+    </div>
   </div>
+
+  <div v-else class="row">
+    <div class="alert alert-primary col-lg-6" role="alert">No result</div>
+  </div>
+
+  <button v-on:click="moreResult" v-if="next" class="btn btn-primary">
+    more results
+  </button>
 </template>
 
 <script>
-import HelloWorld from '@/components/HelloWorld.vue'
 import api from '@/api'
+
+import MangaThumbnail from '@/components/MangaThumbnail.vue'
 
 export default {
   name: 'HomeView',
+
   components: {
-    HelloWorld
+    MangaThumbnail
   },
+
+  data() {
+    return {
+      mangas: [],
+      query: this.$route.params.query,
+      loading: false,
+      next: null
+    } 
+  },
+
   created() {
-    console.log(this.$store.getters.headerToken)
-    api.get('/users/', {
-      headers: {
-        Authorization: this.$store.getters.headerToken
-      }
-    })
-    .then(response => {
-      console.log(response.data.results)
-      this.mangas = response.data.results
-    })
-    .catch(error => {
-      console.log(error)
-    })
-  }
+    this.fetch()
+  },
+
+  methods: {
+    fetch() {
+      this.loading = true
+
+      api.get('/mangas/', {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        this.mangas = response.data.results
+        this.next = response.data.next
+        this.loading = false
+      })
+      .catch(() =>
+        this.loading = false
+      )
+    },
+
+    moreResult() {
+      this.loading = true
+
+      api.get(this.next, {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        this.mangas.push.apply(this.mangas, response.data.results)
+        this.next = response.data.next
+        this.loading = false
+      })
+      .catch(() =>
+        this.loading = false
+      )
+    }
+  },
 }
 </script>

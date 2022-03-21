@@ -1,14 +1,14 @@
 <template>
   <nav class="navbar sticky-top navbar-expand-md navbar-dark bg-dark">
     <div class="container-fluid">
-      <router-link to="/" class="navbar-brand text-primary">uwu</router-link>
+      <router-link to="/" class="navbar-brand text-primary" v-on:click="hideNavBar">uwu</router-link>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggle">
-        <span class="navbar-toggler-icon"></span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" id="lol">
+        <span class="navbar-toggler-icon"/>
       </button>
 
-      <div class="collapse navbar-collapse" id="navbarToggle">
-        <div class="navbar-nav me-auto">
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav me-auto" v-on:click="hideNavBar">
           <router-link to="/about" class="nav-link">about</router-link>
           <router-link to="/user" v-if="this.$store.getters.isLogged" class="nav-link">user</router-link>
         </div>
@@ -17,12 +17,12 @@
           <form v-if="$route.name != 'search'" @submit.prevent="searchPressed" class="mb-2 mb-md-0 me-md-2">
             <div class="input-group">
               <input v-model="query" class="form-control" type="search" placeholder="Search mangas"/>
-              <button class="btn btn-primary" type="submit">search</button>
+              <button class="btn btn-primary" type="submit" v-on:click="hideNavBar">search</button>
             </div>
           </form>
 
-          <button v-on:click="logOut" v-if="this.$store.getters.isLogged" class="btn btn-outline-primary">logout</button>
-          <router-link to="/login" v-else class="btn btn-outline-primary">login</router-link>
+          <button v-on:click="logOut" v-if="this. $store.getters.isLogged" class="btn btn-outline-primary">logout</button>
+          <router-link to="/login" v-else class="btn btn-outline-primary" v-on:click="hideNavBar">login</router-link>
         </div>
       </div>
     </div>
@@ -30,6 +30,8 @@
 </template>
 
 <script>
+import { Collapse } from 'bootstrap'
+
 export default {
   name : 'NavBar',
 
@@ -39,9 +41,19 @@ export default {
     }
   },
 
+  mounted() {
+    let navbar = document.getElementById('navbarCollapse')
+    this.collapse = new Collapse(navbar, { toggle: false })
+  },
+
   methods: {
+    hideNavBar() {
+      this.collapse.hide()
+    },
+
     logOut() {
       this.$store.dispatch('logOut')
+      this.collapse.hide()
     },
 
     searchPressed() {
