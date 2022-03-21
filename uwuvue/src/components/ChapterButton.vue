@@ -1,6 +1,6 @@
 <template>
   <div class="d-grid">
-    <button v-on:click="toggle" :class="buttonClass" :disabled="loading || !$store.getters.isLogged" 
+    <button v-on:click="toggle" :class="buttonClass"  
       class="btn square-box">
       <div class="square-content p-2">
         <span v-if="loading" class="spinner-border" role="status"/>
@@ -41,6 +41,10 @@ export default {
 
   methods: {
     toggle() {
+      if (!this.store.getters.isLogged) {
+        return false
+      }
+
       this.loading = true
 
       api.post(`/chapters/${this.chapter.pk}/add_remove_to_read/`, {}, {
