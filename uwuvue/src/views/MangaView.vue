@@ -6,8 +6,8 @@
 
     <div class="col mb-4">
       <h1 class="text-primary">{{manga.name}}</h1>
-      <p>{{manga.author}}</p>
-      <p>{{manga.date}}</p>
+      <p>{{manga.author}} - {{manga.date}}</p>
+      <p>{{manga.description}}</p>
     </div>
   </div>
 
@@ -21,7 +21,7 @@
 
   <div v-if="chapters.length > 0" class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4">
     <div v-for="(chapter, index) in chapters" :key="index" class="col">
-      <chapter-button :chapter="chapter" v-on:toggle="fetch"/>
+      <chapter-button :chapter="chapter" @toggle="fetch"/>
     </div>
   </div>
 </template>

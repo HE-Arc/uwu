@@ -1,5 +1,5 @@
 <template>
-  <button v-if="visible" v-on:click="scrollToTop" class="btn btn-primary position-fixed bottom-0 end-0 m-2">back to top</button>
+  <button v-if="visible" @click="scrollToTop" class="btn btn-primary position-fixed bottom-0 end-0 m-2">back to top</button>
 </template>
 
 <script>

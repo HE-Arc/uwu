@@ -1,6 +1,6 @@
 <template>
   <div class="d-grid">
-    <button v-on:click="toggle" :class="buttonClass"  
+    <button @click="toggle" :class="buttonClass"  
       class="btn square-box">
       <div class="square-content p-2">
         <span v-if="loading" class="spinner-border" role="status"/>

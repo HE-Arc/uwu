@@ -27,6 +27,12 @@ const routes = [
     meta: { title: 'Login' }
   },
   {
+    path: '/signup',
+    name: 'signup',
+    component: () => import('../views/SignupView.vue'),
+    meta: { title: 'Signup' }
+  },
+  {
     path: '/search/:query?',
     name: 'search',
     component: () => import('../views/SearchView.vue'),
