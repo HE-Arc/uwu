@@ -28,7 +28,8 @@
         <span class="spinner-border spinner-border-sm" role="status"></span>
         loading...
       </button>
-      <button type="submit" class="btn btn-primary mb-2" v-else>sign up</button>
+      <button type="submit" class="btn btn-primary mb-2 me-2" v-else>sign up</button>
+      <router-link to="/login">Already have an account?</router-link>
     </form>
   </div>
 </template>
@@ -55,15 +56,15 @@ export default {
 
   methods: {
     pictureChanged(event) {
-      const file = event.target.files[0]
-      const reader = new FileReader()
+      this.picture = event.target.files[0]
+      // const reader = new FileReader()
 
-      reader.addEventListener('load', (event) => {
-        this.picture = event.target.result
-        console.log(this.picture)
-      });
+      // reader.addEventListener('load', (event) => {
+      //   this.picture = event.target.result
+      //   console.log(this.picture)
+      // });
 
-      reader.readAsDataURL(file);
+      // reader.readAsDataURL(file);
     },
 
     signup() {
@@ -80,9 +81,16 @@ export default {
       this.error = ''
       this.loading = true
 
-      api.post('/users/', {
-        username: this.username,
-        password: this.password
+      let data =  new FormData();
+      data.append('username', this.username)
+      data.append('password', this.password)
+
+      if (this.picture) {
+        data.append('image', this.picture)
+      }
+
+      api.post('/users/', data, {
+        headers: { "Content-Type": "multipart/form-data" }
       })
       .then(response => {
         this.$store.dispatch('login', {
@@ -97,12 +105,6 @@ export default {
         console.log(error.response.data)
         this.loading = false
       })
-    }
-  },
-
-  created() {
-    if (this.$store.getters.isLogged) {
-      this.$router.go(-1)
     }
   }
 }
