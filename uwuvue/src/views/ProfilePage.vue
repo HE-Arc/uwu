@@ -3,22 +3,19 @@
             <h1>My profil</h1>
             <div class="profile--informations">
                 <div class="profile--image col-md-6 mb-4">
-                    <img class="rounded-circle z-depth-2" src="https://ilarge.lisimg.com/image/23099837/820full-nezuko-kamado.jpg" data-holder-rendered="true">
+                    <!-- <img v-bind:src="user.image" class="img-fluid rounded mb-3"/> -->
                 </div>
-                
                 <p>Username uWu</p>
                 <p>Birth</p>
-                <!-- ICI BOUTON POUR AJOUTER EN AMI DANS L'AUTRE VUE -->
-                
                 <div class="manga--list">
-                    <h2>Collections</h2>
 
-                    <button>Haha...</button>
+                      <MangaThumbnailRow />           
+                
                 </div>
                     <div class="friend--list">
                         <h2>Friends</h2>
 
-                        <button>Lool...</button>
+                       
                     </div>
             </div>
     </div>
@@ -26,21 +23,16 @@
 
 <script>
 import api from '@/api'
-
-//import MangaThumbnailRow from '@/component/MangaThumbnailRow.vue'
+import MangaThumbnailRow from '@/components/MangaThumbnailRow.vue'
 
 export default {
     name: 'ProfilePage',
 
     components: {
-     //   MangaThumbnailRow
+        MangaThumbnailRow,
     },
-    
-  /*  methods: {
-        makeDataManga(){
-
-        }
-    }, */
+    methods: {
+    }, 
     
 
     created() {
@@ -54,6 +46,22 @@ export default {
       .catch(error => {
         console.log(error.response.data)
       })
+    },
+
+    search() {
+      this.loading = true
+
+      api.get('/mangas/', {
+
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        this.mangas = response.data.results
+        this.loading = false
+      })
+      .catch(() =>
+        this.loading = false
+      )
     }
 
 }
@@ -72,9 +80,6 @@ export default {
 
         }
 
-    h2 {
-        color: rosybrown;
-    }
 
     
     
