@@ -1,3 +1,4 @@
+from PIL import Image
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django_filters.rest_framework import DjangoFilterBackend
@@ -32,13 +33,11 @@ class UwuUserViewSet(viewsets.ModelViewSet):
             other_user.remove_friend(user_uwu.user)
             return Response({
                                 'status' : f'{user_uwu} and {other_user} are not friend anymore',
-                                'code':status.HTTP_200_OK
                             }, 
                             status=status.HTTP_200_OK)
         else:
             return Response({
                                 'status' : f'{user_uwu} and {other_user} are already not friend',
-                                'code':status.HTTP_400_BAD_REQUEST
                             }, 
                             status=status.HTTP_400_BAD_REQUEST)
 
@@ -58,19 +57,21 @@ class UserViewSet(viewsets.ModelViewSet):
             user.set_password(validated_data.data['password'])
             user.save()
             
-            user_uwu = UwuUser.objects.create(user=user)
+            try:
+                user_uwu = UwuUser.objects.create(user=user, image=validated_data.data['image'])
+            except:
+                user_uwu = UwuUser.objects.create(user=user)
+
             user_uwu.save()
             token, created = Token.objects.get_or_create(user=user)
             return Response({
                                 'status' : f'The user {user} has been created!',
                                 'token': token.key,
-                                'code':status.HTTP_202_ACCEPTED,
                             },
                             status=status.HTTP_202_ACCEPTED)
         except IntegrityError:
             return Response({
                                 'status' : f'The username {validated_data.data["username"]} is already used!',
-                                'code':status.HTTP_409_CONFLICT
                             },
                             status=status.HTTP_409_CONFLICT)
         
@@ -232,7 +233,6 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         if sender == receiver:
             return Response({
                                 'status' : 'You can\'t send a friend request to yourself',
-                                'code':status.HTTP_400_BAD_REQUEST
                             }, 
                             status=status.HTTP_400_BAD_REQUEST)
            
@@ -240,7 +240,6 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         if sender_uwu.is_friend(receiver):
             return Response({
                                 'status' : f'{sender} and {receiver} are already friend',
-                                'code':status.HTTP_400_BAD_REQUEST
                             }, 
                             status=status.HTTP_400_BAD_REQUEST)
         
@@ -250,21 +249,18 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         if same_request.count() > 0:
             return Response({
                                 'status' : 'the same request already exist!',
-                                'code':status.HTTP_400_BAD_REQUEST
                             }, 
                             status=status.HTTP_400_BAD_REQUEST)
         
         if reverse_request.count() > 0:
             return Response({
                                 'status' : f'{receiver} has already send a request to {sender}',
-                                'code':status.HTTP_400_BAD_REQUEST
                             }, 
                             status=status.HTTP_400_BAD_REQUEST)
         
         FriendRequest.objects.create(sender=sender, receiver=receiver)
         return Response({
                             'status' : 'Friend request has been send',
-                            'code':status.HTTP_201_CREATED
                         },
                         status=status.HTTP_201_CREATED)
         
@@ -279,14 +275,12 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         except:
             return Response({
                                 'status' : 'Friend request does not exist',
-                                'code':status.HTTP_400_BAD_REQUEST
                             },
                             status=status.HTTP_400_BAD_REQUEST)
         
         if not friend_request.is_on_hold:
             return Response({
                                 'status' : 'Friend request has expired!',
-                                'code':status.HTTP_400_BAD_REQUEST
                             },
                             status=status.HTTP_400_BAD_REQUEST)
         
@@ -296,7 +290,6 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         if not user == receiver:
             return Response({
                             'status' : 'You are not allowed to accept a friend request that does not concern you',
-                            'code':status.HTTP_401_UNAUTHORIZED
                             },
                             status=status.HTTP_401_UNAUTHORIZED) 
         
@@ -310,7 +303,6 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         
         return Response({
                             'status' : 'Friend request has been accepted',
-                            'code':status.HTTP_202_ACCEPTED
                         },
                         status=status.HTTP_202_ACCEPTED)
 
