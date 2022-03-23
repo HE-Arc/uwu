@@ -57,9 +57,9 @@ class UserViewSet(viewsets.ModelViewSet):
             user.set_password(validated_data.data['password'])
             user.save()
             
-            try:
+            if 'image' in validated_data.data:
                 user_uwu = UwuUser.objects.create(user=user, image=validated_data.data['image'])
-            except:
+            else:
                 user_uwu = UwuUser.objects.create(user=user)
 
             user_uwu.save()
@@ -74,6 +74,8 @@ class UserViewSet(viewsets.ModelViewSet):
                                 'status' : f'The username {validated_data.data["username"]} is already used!',
                             },
                             status=status.HTTP_409_CONFLICT)
+        except:
+            user.delete()
         
     
     
