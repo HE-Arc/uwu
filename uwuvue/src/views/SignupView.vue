@@ -57,14 +57,6 @@ export default {
   methods: {
     pictureChanged(event) {
       this.picture = event.target.files[0]
-      // const reader = new FileReader()
-
-      // reader.addEventListener('load', (event) => {
-      //   this.picture = event.target.result
-      //   console.log(this.picture)
-      // });
-
-      // reader.readAsDataURL(file);
     },
 
     signup() {
@@ -100,9 +92,11 @@ export default {
         this.$router.go(-1)
         this.loading = false
       })
-      .catch((error) => {
-        this.error = 'lol'
-        console.log(error.response.data)
+      .catch(error => {
+        if (error.response) {
+          this.error = error.response.data.status
+        }
+
         this.loading = false
       })
     }
