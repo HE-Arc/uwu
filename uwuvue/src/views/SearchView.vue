@@ -24,7 +24,7 @@
     <div class="alert alert-primary col-lg-6" role="alert">No result</div>
   </div>
 
-  <button v-on:click="moreResult" v-if="next" class="btn btn-primary">
+  <button @click="moreResult" v-if="next" class="btn btn-primary">
     more results
   </button>
 </template>

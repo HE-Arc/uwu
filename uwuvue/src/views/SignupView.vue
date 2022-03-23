@@ -1,8 +1,13 @@
 <template>
   <div class="row">
     <div class="col-md-4 col-lg-6"/>
-    <form @submit.prevent="login" class="col-md-8 col-lg-6">
+    <form @submit.prevent="signup" class="col-md-8 col-lg-6">
       <div v-if="error" class="alert alert-info mb-2">{{error}}</div>
+
+      <div class="form-group mb-2">
+        <label for="pictureInput">Profile picture</label>
+        <input type="file" class="form-control" accept=".jpg, .jpeg, .png" @change="pictureChanged" id="pictureInput">
+      </div>
 
       <div class="form-group mb-2">
         <label for="userInput">Username</label>
@@ -14,11 +19,16 @@
         <input v-model="password" type="password" required class="form-control" id="passwordInput" placeholder="password">
       </div>
 
+      <div class="form-group mb-2">
+        <label for="repeatInput">Repeat password</label>
+        <input v-model="repeatPassword" type="password" required class="form-control" id="repeatInput" placeholder="password">
+      </div>
+
       <button class="btn btn-primary mb-2" type="button" disabled v-if="loading">
         <span class="spinner-border spinner-border-sm" role="status"></span>
         loading...
       </button>
-      <button type="submit" class="btn btn-primary mb-2" v-else>login</button>
+      <button type="submit" class="btn btn-primary mb-2" v-else>sign up</button>
     </form>
   </div>
 </template>
@@ -34,37 +44,57 @@ export default {
 
   data() {
     return {
+      picture: null,
       username: '',
       password: '',
+      repeatPassword: '',
       error: '',
       loading: false
     }
   },
 
   methods: {
-    login() {
-      if (this.username == '' || this.password == '') {
+    pictureChanged(event) {
+      const file = event.target.files[0]
+      const reader = new FileReader()
+
+      reader.addEventListener('load', (event) => {
+        this.picture = event.target.result
+        console.log(this.picture)
+      });
+
+      reader.readAsDataURL(file);
+    },
+
+    signup() {
+      if (this.username == '' || this.password == '' || this.repeatPassword == '') {
         this.error = 'Inputs can\'t be empty'
+        return;
+      }
+
+      if (this.password != this.repeatPassword) {
+        this.error = 'Passwords don\'t match'
         return;
       }
 
       this.error = ''
       this.loading = true
 
-      api.post('/auth/', {
+      api.post('/users/', {
         username: this.username,
         password: this.password
       })
       .then(response => {
-        this.$store.dispatch('logIn', {
+        this.$store.dispatch('login', {
           token: response.data.token
         })
 
         this.$router.go(-1)
         this.loading = false
       })
-      .catch(() => {
-        this.error = 'Wrong username or password'
+      .catch((error) => {
+        this.error = 'lol'
+        console.log(error.response.data)
         this.loading = false
       })
     }

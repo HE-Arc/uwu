@@ -48,11 +48,11 @@ export default createStore({
       commit('INITIALIZE')
     },
 
-    logIn({ commit }, payload) {
+    login({ commit }, payload) {
       commit('SET_TOKEN', payload.token)
     },
 
-    logOut({ commit }) {
+    logout({ commit }) {
       commit('UNSET_TOKEN')
     }
   },
