@@ -1,6 +1,7 @@
 <template>
   <div class="row">
     <div class="col-4 col-md-2">
+      <favorite-icon :manga="manga"/>
       <img :src="manga.image" class="img-fluid rounded mb-4"/>
     </div>
 
@@ -13,9 +14,7 @@
 
   <div class="row mb-4">
     <div class="col">
-      <div v-if="manga.progress != null" class="progress">
-        <div :class="progressClass" :style="progressStyle" class="progress-bar" role="progressbar"/>
-      </div>
+      <progress-bar :manga="manga"/>
     </div>
   </div>
 
@@ -30,12 +29,16 @@
 import api from '@/api'
 
 import ChapterButton from '@/components/ChapterButton.vue'
+import ProgressBar from '@/components/ProgressBar.vue'
+import FavoriteIcon from '@/components/FavoriteIcon.vue'
 
 export default {
   name : 'MangaView',
 
   components: {
-    ChapterButton
+    ChapterButton,
+    ProgressBar,
+    FavoriteIcon
   },
 
   data() {
@@ -49,26 +52,13 @@ export default {
     this.fetch()
   },
 
-  computed: {
-    progressStyle: function() {
-      return 'width: ' + this.manga.progress + '%'
-    },
-
-    progressClass: function() {
-      if (this.manga.progress == 100) {
-        return 'bg-primary'
-      }
-
-      return 'bg-info'
-    }
-  },
-
   methods: {
     fetch() {
       api.get(`/mangas/${this.$route.params.id}/`, {
         headers: this.$store.getters.header
       })
       .then(response => {
+        console.log(response.data)
         this.manga = response.data
       })
       .catch(error => {

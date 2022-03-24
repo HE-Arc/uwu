@@ -13,9 +13,11 @@
     <div class="alert alert-primary col-lg-6" role="alert">No result</div>
   </div>
 
-  <button @click="moreResult" v-if="next" class="btn btn-primary">
-    more results
-  </button>
+  <div v-if="next" class="position-relative">
+    <button @click="moreResult" class="btn btn-primary mt-4 position-absolute top-0 start-50 translate-middle">
+      more results
+    </button>
+  </div>
 </template>
 
 <script>

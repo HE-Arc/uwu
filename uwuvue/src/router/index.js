@@ -38,7 +38,7 @@ const routes = [
     meta: { title: 'Manga search' }
   },
   {
-    path: '/users/search:query?',
+    path: '/users/search/:query?',
     name: 'users-search',
     component: () => import('../views/UserSearchView.vue'),
     meta: { title: 'User search' }

@@ -14,9 +14,9 @@
     </form>
   </div>
 
-  <div v-if="users.length > 0 || loading" class="row">
+  <div v-if="users.length > 0 || loading || $route.params.query == ''" class="row">
     <div v-for="(user, index) in users" :key="index" class="col-6 col-md-3 col-lg-2">
-      <user-thumbnail :user="manga"/>
+      <user-thumbnail :user="user"/>
     </div>
   </div>
 
@@ -24,9 +24,11 @@
     <div class="alert alert-primary col-lg-6" role="alert">No result</div>
   </div>
 
-  <button @click="moreResult" v-if="next" class="btn btn-primary">
-    more results
-  </button>
+  <div v-if="next" class="position-relative">
+    <button @click="moreResult" class="btn btn-primary mt-4 position-absolute top-0 start-50 translate-middle">
+      more results
+    </button>
+  </div>
 </template>
 
 <script>
@@ -64,7 +66,7 @@ export default {
   methods: {
     searchPressed() {
       this.$router.push({
-        name: 'search',
+        name: 'users-search',
         params: {
           query: this.query
         }
@@ -72,9 +74,13 @@ export default {
     },
 
     search() {
+      if (this.$route.params.query == "") {
+        return;
+      }
+
       this.loading = true
 
-      api.get('/uwusers/', {
+      api.get('/uwuusers/', {
         params: {
           search: this.$route.params.query
         },
@@ -86,9 +92,10 @@ export default {
         this.next = response.data.next
         this.loading = false
       })
-      .catch(() =>
+      .catch((error) => {
+        console.log(error)
         this.loading = false
-      )
+      })
     },
 
     moreResult() {
@@ -102,9 +109,9 @@ export default {
         this.next = response.data.next
         this.loading = false
       })
-      .catch(() =>
+      .catch(() => {
         this.loading = false
-      )
+      })
     }
   },
 }

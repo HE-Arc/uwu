@@ -10,8 +10,8 @@
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav me-auto" @click="hideNavBar">
           <router-link to="/about" class="nav-link">about</router-link>
-          <router-link to="/search/users" class="nav-link">search users</router-link>
-          <router-link to="/user" v-if="this.$store.getters.isLogged" class="nav-link">user</router-link>
+          <router-link to="/users/search" class="nav-link">search users</router-link>
+          <router-link to="/user" v-if="$store.getters.isLogged" class="nav-link">user</router-link>
         </div>
         
         <div class="navbar-nav">
@@ -22,7 +22,7 @@
             </div>
           </form>
 
-          <button @click="logOut" v-if="this. $store.getters.isLogged" class="btn btn-outline-primary">logout</button>
+          <button @click="logOut" v-if="$store.getters.isLogged" class="btn btn-outline-primary">logout</button>
           <router-link to="/login" v-else class="btn btn-outline-primary" @click="hideNavBar">login</router-link>
         </div>
       </div>
