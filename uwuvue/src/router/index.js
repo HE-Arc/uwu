@@ -1,11 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView,
+    component: () => import('../views/HomeView.vue'),
     meta: { title: 'Home' }
   },
   {
@@ -36,7 +35,13 @@ const routes = [
     path: '/search/:query?',
     name: 'search',
     component: () => import('../views/SearchView.vue'),
-    meta: { title: 'Search' }
+    meta: { title: 'Manga search' }
+  },
+  {
+    path: '/users/search:query?',
+    name: 'users-search',
+    component: () => import('../views/UserSearchView.vue'),
+    meta: { title: 'User search' }
   }
 ]
 
