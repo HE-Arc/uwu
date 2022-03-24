@@ -10,6 +10,7 @@
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav me-auto" @click="hideNavBar">
           <router-link to="/about" class="nav-link">about</router-link>
+          <router-link to="/search/users" class="nav-link">search users</router-link>
           <router-link to="/user" v-if="this.$store.getters.isLogged" class="nav-link">user</router-link>
         </div>
         
