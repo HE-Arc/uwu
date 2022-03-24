@@ -154,7 +154,9 @@ class MangaViewSet(viewsets.ModelViewSet):
             progress = progress*100/len(chapters)
         
         super_retrieve.data['progress'] = progress
-
+        favorites = user_uwu.favorites.all()
+        super_retrieve.data['isFavorite'] = super_retrieve.data['url'].obj in favorites
+        
         return super_retrieve
 
     def list(self, request):
