@@ -1,3 +1,4 @@
+from unittest import result
 from PIL import Image
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -17,7 +18,10 @@ class UwuUserViewSet(viewsets.ModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
     queryset = UwuUser.objects.all().order_by('pk')
-    serializer_class = UwuUserSerializer            
+    serializer_class = UwuUserSerializer
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)           
+    search_fields = ['user__username',] 
+    
 
     @action(detail=True, methods=['post'])
     def unfriend(self, request, pk=None):
@@ -50,6 +54,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('date_joined')
     serializer_class = UserSerializer
     permissions_class = [permissions.IsAdminUser,]
+
     
     def create(self, validated_data):
         try:
@@ -65,17 +70,31 @@ class UserViewSet(viewsets.ModelViewSet):
             user_uwu.save()
             token, created = Token.objects.get_or_create(user=user)
             return Response({
-                                'status' : f'The user {user} has been created!',
+                                'status' : f'The user {user} has been created',
                                 'token': token.key,
                             },
                             status=status.HTTP_202_ACCEPTED)
         except IntegrityError:
             return Response({
-                                'status' : f'The username {validated_data.data["username"]} is already used!',
+                                'status' : f'The username {validated_data.data["username"]} is already used',
                             },
                             status=status.HTTP_409_CONFLICT)
         except:
             user.delete()
+    
+    @action(detail=True)        
+    def get_friends(self, request, pk=None):
+        context = {'request':request}
+        user = request.user
+        uwu_user = UwuUser.objects.get(user=user)
+        results = uwu_user.friends.all()
+        serializer = UserSerializer(results, many=True, context=context)
+        if len(serializer.data) > 0:
+            for f in serializer.data:
+                f['image'] = UwuUser.objects.get(user=f['url'].obj).image.url
+        
+
+        return Response(serializer.data)
         
     
     
@@ -250,7 +269,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         
         if same_request.count() > 0:
             return Response({
-                                'status' : 'the same request already exist!',
+                                'status' : 'the same request already exist',
                             }, 
                             status=status.HTTP_400_BAD_REQUEST)
         
@@ -282,7 +301,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         
         if not friend_request.is_on_hold:
             return Response({
-                                'status' : 'Friend request has expired!',
+                                'status' : 'Friend request has expired',
                             },
                             status=status.HTTP_400_BAD_REQUEST)
         

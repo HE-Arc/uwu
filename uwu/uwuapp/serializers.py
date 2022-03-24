@@ -5,15 +5,8 @@ from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'password', 'pk']
+        fields = ['url', 'username', 'pk']
         
-
-class UwuUserSerializer(serializers.HyperlinkedModelSerializer):
-    username = serializers.CharField(source='user.username')
-    
-    class Meta:
-        model = UwuUser
-        fields = ['url', 'username', 'friends', 'favorites', 'readed', 'image']
               
 
 class ChapterSerializer(serializers.HyperlinkedModelSerializer):
@@ -31,6 +24,13 @@ class MangaSerializer(serializers.HyperlinkedModelSerializer):
         model = Manga
         fields = ['url', 'name', 'author', 'description', 'date', 'created', 'updated', 'isFinished', 'chapters', 'image', 'pk']
         
+class UwuUserSerializer(serializers.HyperlinkedModelSerializer):
+    username = serializers.CharField(source='user.username')
+    favorites = MangaSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = UwuUser
+        fields = ['url', 'username', 'friends', 'favorites', 'readed', 'image', 'pk']
         
 class FriendRequestSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
