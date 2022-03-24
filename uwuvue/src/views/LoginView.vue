@@ -18,7 +18,8 @@
         <span class="spinner-border spinner-border-sm" role="status"></span>
         loading...
       </button>
-      <button type="submit" class="btn btn-primary mb-2" v-else>login</button>
+      <button type="submit" class="btn btn-primary mb-2 me-2" v-else>login</button>
+      <router-link to="/signup">Create an account?</router-link>
     </form>
   </div>
 </template>
@@ -56,7 +57,7 @@ export default {
         password: this.password
       })
       .then(response => {
-        this.$store.dispatch('logIn', {
+        this.$store.dispatch('login', {
           token: response.data.token
         })
 
