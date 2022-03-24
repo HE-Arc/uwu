@@ -174,8 +174,13 @@ class MangaViewSet(viewsets.ModelViewSet):
                     if c.obj in chapters:
                         progress += 1
                 progress = progress*100/len(r['chapters'])
-                        
+            
             r['progress'] = progress
+            
+            favorites = user_uwu.favorites.all()
+            r['isFavorite'] = r['url'].obj in favorites     
+                        
+            
 
 
         return super_list
