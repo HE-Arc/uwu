@@ -187,8 +187,8 @@ class MangaViewSet(viewsets.ModelViewSet):
     
     @action(methods=['post'], detail=True)
     def add_remove_fav(self, request, pk=None):
-        user = User.objects.get(username=request.user)
-        user_uwu = UwuUser.objects.get(user=user)
+        user = request.user
+        user_uwu = UwuUser.objects.get(user=request.user)
         manga = Manga.objects.get(pk=pk)
         
         if not user_uwu.is_fav(manga):
