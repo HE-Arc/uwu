@@ -1,7 +1,9 @@
 <template>
   <nav class="navbar sticky-top navbar-expand-md navbar-dark bg-dark">
     <div class="container-fluid">
-      <router-link to="/" class="navbar-brand text-primary" @click="hideNavBar">uwu</router-link>
+      <router-link to="/" class="navbar-brand text-primary" @click="hideNavBar">
+        <img src="/uwu.png" height="24"/>
+      </router-link>
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" id="lol">
         <span class="navbar-toggler-icon"/>
