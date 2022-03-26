@@ -64,6 +64,7 @@ class Chapter(models.Model):
     order = models.IntegerField()
 
     def save(self, *args, **kwargs):
+        super().save()
         self.manga_id.save()
         
     def __str__(self):
