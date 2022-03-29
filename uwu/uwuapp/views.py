@@ -85,13 +85,24 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=True)        
     def get_friends(self, request, pk=None):
         context = {'request':request}
-        user = request.user
+        user = User.objects.get(pk=pk)
         uwu_user = UwuUser.objects.get(user=user)
         results = uwu_user.friends.all()
         serializer = UserSerializer(results, many=True, context=context)
         if len(serializer.data) > 0:
             for f in serializer.data:
                 f['image'] = UwuUser.objects.get(user=f['url'].obj).image.url
+        
+
+        return Response(serializer.data)
+
+    @action(detail=True)        
+    def get_readed(self, request, pk=None):
+        context = {'request':request}
+        user = User.objects.get(pk=pk)
+        uwu_user = UwuUser.objects.get(user=user)
+        results = uwu_user.readed.all()
+        serializer = ChapterSerializer(results, many=True, context=context)
         
 
         return Response(serializer.data)
