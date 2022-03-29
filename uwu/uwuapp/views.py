@@ -106,6 +106,17 @@ class UserViewSet(viewsets.ModelViewSet):
         
 
         return Response(serializer.data)
+
+    @action(detail=True)        
+    def get_favorites(self, request, pk=None):
+        context = {'request':request}
+        user = User.objects.get(pk=pk)
+        uwu_user = UwuUser.objects.get(user=user)
+        results = uwu_user.favorites.all()
+        serializer = MangaSerializer(results, many=True, context=context)
+        
+
+        return Response(serializer.data)
         
     
     
