@@ -49,6 +49,12 @@ const routes = [
     component: () => import('../views/UserView.vue'),
     meta: { title: 'User' }
   },
+  {
+    path: '/users/:id/favorites',
+    name: 'users-favorites',
+    component: () => import('../views/UserFavorites.vue'),
+    meta: { title: 'Favorites' }
+  },
 ]
 
 const router = createRouter({
