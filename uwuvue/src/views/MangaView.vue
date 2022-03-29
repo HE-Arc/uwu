@@ -18,7 +18,7 @@
     </div>
   </div>
 
-  <div v-if="chapters.length > 0" class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4">
+  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4">
     <div v-for="(chapter, index) in chapters" :key="index" class="col">
       <chapter-button :chapter="chapter" @toggle="fetch"/>
     </div>

@@ -42,7 +42,13 @@ const routes = [
     name: 'users-search',
     component: () => import('../views/UserSearchView.vue'),
     meta: { title: 'User search' }
-  }
+  },
+  {
+    path: '/users/:id',
+    name: 'users',
+    component: () => import('../views/UserView.vue'),
+    meta: { title: 'User' }
+  },
 ]
 
 const router = createRouter({
