@@ -10,6 +10,17 @@
     </div>
   </div>
 
+   <h2>Mangas readed</h2>
+
+  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4 flex-nowrap overflow-auto">
+    <div v-for="(manga, index) in readed.slice(0,6)" :key="index" class="col">
+      <manga-thumbnail :manga="manga" :simple="true"/>
+    </div>
+  </div>
+      <div>
+           <router-link :to="'/users/' + user.pk + '/readed'" type="button" class="btn btn-primary">more...</router-link>
+      </div> 
+
   <h2>Favorites mangas</h2>
 
   <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4 flex-nowrap overflow-auto">
@@ -22,16 +33,7 @@
       </div>
 
 
-   <h2>Mangas readed</h2>
-
-  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4 flex-nowrap overflow-auto">
-    <div v-for="(manga, index) in readed.slice(0,6)" :key="index" class="col">
-      <manga-thumbnail :manga="manga" :simple="true"/>
-    </div>
-  </div>
-      <div>
-           <router-link :to="'/users/' + user.pk + '/readed'" type="button" class="btn btn-primary">more...</router-link>
-      </div> 
+  
 
 </template>
 
@@ -71,25 +73,24 @@ export default {
 
     api.get(`/users/${this.$route.params.id}/get_favorites/`, {
         headers: this.$store.getters.header
-      })
-      .then(response => {
+    })
+    .then(response => {
         this.favorites = response.data
-      })
-      .catch(error => {
+    })
+    .catch(error => {
         console.log(error)
-      })
+    })
 
     
      api.get(`/users/${this.$route.params.id}/get_readed/`, {
         headers: this.$store.getters.header
-      })
-      .then(response => {
+    })
+    .then(response => {
         this.readed = response.data
-      })
-      .catch(error => {
+    })
+    .catch(error => {
         console.log(error)
-      })
-
+    })
 
   }
 }
