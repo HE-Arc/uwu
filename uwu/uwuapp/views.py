@@ -1,9 +1,10 @@
+import json
 from unittest import result
 from PIL import Image
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, permissions, filters, status
+from rest_framework import viewsets, permissions, filters, status, pagination
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from uwu.uwuapp import serializers
@@ -84,38 +85,93 @@ class UserViewSet(viewsets.ModelViewSet):
     
     @action(detail=True)        
     def get_friends(self, request, pk=None):
+        paginator = pagination.PageNumberPagination()
         context = {'request':request}
         user = User.objects.get(pk=pk)
         uwu_user = UwuUser.objects.get(user=user)
-        results = uwu_user.friends.all()
+        results = uwu_user.friends.all().order_by('username')
+        results = paginator.paginate_queryset(results, request)
+
         serializer = UserSerializer(results, many=True, context=context)
         if len(serializer.data) > 0:
             for f in serializer.data:
                 f['image'] = UwuUser.objects.get(user=f['url'].obj).image.url
         
+        response = paginator.get_paginated_response(serializer.data)
 
-        return Response(serializer.data)
+        return response
 
     @action(detail=True)        
     def get_readed(self, request, pk=None):
+        paginator = pagination.PageNumberPagination()
         context = {'request':request}
         user = User.objects.get(pk=pk)
         uwu_user = UwuUser.objects.get(user=user)
-        results = uwu_user.readed.all()
-        serializer = ChapterSerializer(results, many=True, context=context)
-        
 
-        return Response(serializer.data)
+        results = uwu_user.readed.all()
+        results = paginator.paginate_queryset(results, request)
+        serializer = ChapterSerializer(results, many=True, context=context)
+        response = paginator.get_paginated_response(serializer.data)
+
+        return response
 
     @action(detail=True)        
     def get_favorites(self, request, pk=None):
+        paginator = pagination.PageNumberPagination()
         context = {'request':request}
         user = User.objects.get(pk=pk)
         uwu_user = UwuUser.objects.get(user=user)
         results = uwu_user.favorites.all()
-        serializer = MangaSerializer(results, many=True, context=context)
-        
 
+        results = paginator.paginate_queryset(results, request)
+        serializer = MangaSerializer(results, many=True, context=context)
+        response = paginator.get_paginated_response(serializer.data)
+
+        return response
+
+    @action(detail=True)        
+    def get_readed_mangas(self, request, pk=None):
+        paginator = pagination.PageNumberPagination()
+        context = {'request':request}
+        user = User.objects.get(pk=pk)
+        uwu_user = UwuUser.objects.get(user=user)
+        results = uwu_user.readed.all().order_by('page_nb')           
+
+        if len(results) > 0:
+            mangas = []
+            for c in results:
+                mangas.append(c.manga_id.pk)
+
+            mangas = set(mangas)
+            results = Manga.objects.filter(pk__in=mangas).all().order_by('pk')
+            results = paginator.paginate_queryset(results, request)
+            serializer = MangaSerializer(results, many=True, context=context)
+
+            return paginator.get_paginated_response(serializer.data)
+        
+        return Response({})
+
+    @action(detail=True)
+    def total_pages_readed(self, request, pk=None):
+        user = User.objects.get(pk=pk)
+        user_uwu = UwuUser.objects.get(user=user)
+
+        readed = user_uwu.readed.all()
+
+        total = 0
+        for c in readed:
+            total += c.page_nb
+        
+        return Response({'pages_readed':total})
+
+    @action(detail=False)
+    def my_user(self, request):
+        context = {'request':request}
+        
+        user = request.user
+        
+        serializer = UwuUserSerializer(UwuUser.objects.get(user=user), context=context)
+        
         return Response(serializer.data)
         
     
