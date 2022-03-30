@@ -130,7 +130,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return response
 
     @action(detail=True)        
-    def get_readed_manga(self, request, pk=None):
+    def get_readed_mangas(self, request, pk=None):
         paginator = pagination.PageNumberPagination()
         context = {'request':request}
         user = User.objects.get(pk=pk)
@@ -163,6 +163,17 @@ class UserViewSet(viewsets.ModelViewSet):
             total += c.page_nb
         
         return Response({'pages_readed':total})
+
+    @action(detail=False)
+    def my_user(self, request):
+        context = {'request':request}
+        
+        user = request.user
+        
+        serializer = UwuUserSerializer(UwuUser.objects.get(user=user), context=context)
+        
+        return Response(serializer.data)
+        
     
     
 class MangaViewSet(viewsets.ModelViewSet):
