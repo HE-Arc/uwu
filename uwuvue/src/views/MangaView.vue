@@ -58,7 +58,6 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        console.log(response.data)
         this.manga = response.data
       })
       .catch(error => {

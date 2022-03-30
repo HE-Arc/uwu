@@ -8,12 +8,6 @@ const routes = [
     meta: { title: 'Home' }
   },
   {
-    path: '/about',
-    name: 'about',
-    component: () => import('../views/AboutView.vue'),
-    meta: { title: 'About' }
-  },
-  {
     path: '/mangas/:id',
     name: 'manga',
     component: () => import('../views/MangaView.vue'),
@@ -49,6 +43,30 @@ const routes = [
     component: () => import('../views/UserView.vue'),
     meta: { title: 'User' }
   },
+  {
+    path: '/mangas/add',
+    name: 'add-mangas',
+    component: () => import('../views/AddMangaView.vue'),
+    meta: { title: 'Add manga' }
+  },
+  {
+    path: '/mangas/:id/modify',
+    name: 'modify-manga',
+    component: () => import('../views/ModifyMangaView.vue'),
+    meta: { title: 'Modify manga' }
+  },
+  {
+    path: '/mangas/:id/add',
+    name: 'add-chapters',
+    component: () => import('../views/AddChapterView.vue'),
+    meta: { title: 'Add chapter' }
+  },
+  {
+    path: '/:catchAll(.*)',
+    name: '404',
+    component: () => import('../views/404View.vue'),
+    meta: { title: '404' }
+  }
 ]
 
 const router = createRouter({

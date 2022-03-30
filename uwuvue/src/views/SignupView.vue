@@ -38,7 +38,7 @@
 import api from '@/api'
 
 export default {
-  name : 'MangaView',
+  name : 'SignupView',
 
   components: {
   },
@@ -62,18 +62,18 @@ export default {
     signup() {
       if (this.username == '' || this.password == '' || this.repeatPassword == '') {
         this.error = 'Inputs can\'t be empty'
-        return;
+        return
       }
 
       if (this.password != this.repeatPassword) {
         this.error = 'Passwords don\'t match'
-        return;
+        return
       }
 
       this.error = ''
       this.loading = true
 
-      let data =  new FormData();
+      let data =  new FormData()
       data.append('username', this.username)
       data.append('password', this.password)
 
@@ -82,7 +82,7 @@ export default {
       }
 
       api.post('/users/', data, {
-        headers: { "Content-Type": "multipart/form-data" }
+        headers: { 'Content-Type': 'multipart/form-data' }
       })
       .then(response => {
         this.$store.dispatch('login', {
@@ -99,6 +99,12 @@ export default {
 
         this.loading = false
       })
+    }
+  },
+
+  created() {
+    if (this.$store.getters.isLogged) {
+      this.$router.go(-1)
     }
   }
 }
