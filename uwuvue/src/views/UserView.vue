@@ -57,6 +57,8 @@ export default {
       user: {},
       favorites:[],
       readed:[],
+      readedNext: null,
+      favoriteNext: null,
     }
   },
 
@@ -76,6 +78,7 @@ export default {
     })
     .then(response => {
         this.favorites = response.data.results
+        this.favoriteNext = response.data.next
     })
     .catch(error => {
         console.log(error)
@@ -87,6 +90,7 @@ export default {
     })
     .then(response => {
         this.readed = response.data.results
+        this.readedNext = response.data.next
     })
     .catch(error => {
         console.log(error)
