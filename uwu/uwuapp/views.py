@@ -1,4 +1,5 @@
 import json
+from turtle import title
 from unittest import result
 from PIL import Image
 from django.contrib.auth.models import User
@@ -173,6 +174,29 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = UwuUserSerializer(UwuUser.objects.get(user=user), context=context)
         
         return Response(serializer.data)
+    
+    @action(detail=False)
+    def is_admin(self, request):
+        return Response({'is_admin':request.user.is_staff})
+    
+    @action(detail=True)
+    def is_friend(self, request, pk=None):
+        user = request.user
+        uwu_user = UwuUser.objects.get(user=user)
+        
+        other_user = User.objects.get(pk=pk)
+        other_uwu_user = UwuUser.objects.get(user=other_user)
+        
+        same_request = FriendRequest.objects.filter(sender = user, receiver = other_user, is_on_hold=True).all()
+        other_request = FriendRequest.objects.filter(sender = other_user, receiver = user, is_on_hold=True).all()
+        
+        response = Response({})
+
+        response.data['is_friend'] = other_user in uwu_user.friends.all()
+        response.data['is_asked'] = bool(same_request or other_request)
+        
+        
+        return response
         
     
     
@@ -186,6 +210,34 @@ class MangaViewSet(viewsets.ModelViewSet):
     filterset_fields = ['is_finished']
     search_fields = ['name', 'author']
     ordering_fields = ['name', 'author', 'date']
+    
+    @action(detail=True, methods=['post'])
+    def add_chapter(self, request, pk=None):
+        context = {'request':request}
+        manga = Manga.objects.get(pk=pk)
+        
+        serializer = MangaSerializer(manga, context=context)
+        
+        try:
+            order = request.data['order']
+        except:
+            order = len(serializer.data['chapters']) + 1
+        
+        
+        chapter = Chapter.objects.create(
+            manga_id = manga,
+            title = request.data['title'],
+            page_nb = request.data['page_nb'],
+            order = order
+        )
+        
+        serializer = ChapterSerializer(chapter, context=context)
+        if serializer.is_valid:
+            chapter.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
     
 
     @action(detail=True)
