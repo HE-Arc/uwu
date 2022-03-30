@@ -75,7 +75,7 @@ export default {
         headers: this.$store.getters.header
     })
     .then(response => {
-        this.favorites = response.data
+        this.favorites = response.data.results
     })
     .catch(error => {
         console.log(error)
@@ -86,7 +86,7 @@ export default {
         headers: this.$store.getters.header
     })
     .then(response => {
-        this.readed = response.data
+        this.readed = response.data.results
     })
     .catch(error => {
         console.log(error)

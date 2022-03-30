@@ -54,8 +54,8 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        this.mangas = response.data
-        //this.next = response.data.next
+        this.mangas = response.data.results
+        this.next = response.data.next
         this.loading = false
       })
       .catch(() => {
