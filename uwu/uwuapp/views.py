@@ -1,7 +1,3 @@
-import json
-from turtle import title
-from unittest import result
-from PIL import Image
 import django
 from django.contrib.auth.models import User
 from django.db import IntegrityError
@@ -9,7 +5,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions, filters, status, pagination
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from uwu.uwuapp import serializers
 from uwu.uwuapp.serializers import ChapterSerializer, FriendRequestSerializer, UwuUserSerializer, MangaSerializer, UserSerializer
 from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 from rest_framework.authtoken.models import Token
@@ -37,7 +32,7 @@ class UwuUserViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def unfriend(self, request, pk=None):
         """
-        Unfriending someone from the 'friends'
+        Unfriending someone from the friends
         """       
 
         user_uwu = UwuUser.objects.get(pk=pk)
@@ -95,8 +90,9 @@ class UserViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def ask_friend(self, request, pk=None):
-        
-        
+        """
+        Try to add a friend request to the user {pk}
+        """        
         user = request.user
         try:
             other_user = User.objects.get(pk=pk)
@@ -141,10 +137,11 @@ class UserViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_201_CREATED)
         
         
-        
-    
     @action(detail=True)        
     def get_friends(self, request, pk=None):
+        """
+        Get all friends
+        """
         paginator = pagination.PageNumberPagination()
         context = {'request':request}
         user = User.objects.get(pk=pk)
@@ -163,6 +160,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True)        
     def get_readed(self, request, pk=None):
+        """
+        Get every chapters readed.
+        """
         paginator = pagination.PageNumberPagination()
         context = {'request':request}
         user = User.objects.get(pk=pk)
@@ -177,25 +177,32 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True)        
     def get_favorites(self, request, pk=None):
+        """
+        Get favorties mangas.
+        """
         paginator = pagination.PageNumberPagination()
         context = {'request':request}
         user = User.objects.get(pk=pk)
         uwu_user = UwuUser.objects.get(user=user)
-        results = uwu_user.favorites.all()
+        results = uwu_user.favorites.all().order_by
 
         results = paginator.paginate_queryset(results, request)
-        serializer = MangaSerializer(results, many=True, context=context)
+        serializer = MangaSerializer(data=results, many=True, context=context)
+        if serializer.is_valid():
+            pass
         response = paginator.get_paginated_response(serializer.data)
 
         return response
     
     @action(detail=True)        
     def get_readed_mangas(self, request, pk=None):
+        """
+        Get every readed mangas.
+        """
         paginator = pagination.PageNumberPagination()
         context = {'request':request}
         user = User.objects.get(pk=pk)
         uwu_user = UwuUser.objects.get(user=user)
-        readed_chapters = uwu_user.readed.all()
         results = uwu_user.readed.all().order_by('page_nb')           
 
         if len(results) > 0:
@@ -227,6 +234,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True)
     def total_pages_readed(self, request, pk=None):
+        """
+        Get number of readed pages.
+        """
         user = User.objects.get(pk=pk)
         user_uwu = UwuUser.objects.get(user=user)
 
@@ -240,6 +250,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=False)
     def my_user(self, request):
+        """
+        Get the current user.
+        """
         context = {'request':request}
         
         user = request.user
@@ -250,10 +263,16 @@ class UserViewSet(viewsets.ModelViewSet):
     
     @action(detail=False)
     def is_admin(self, request):
+        """
+        Get True if the current user is an admin.
+        """
         return Response({'is_admin':request.user.is_staff})
     
     @action(detail=True)
     def is_friend(self, request, pk=None):
+        """
+        Get True if the current user is friend with the user {pk}.
+        """
         user = request.user
         uwu_user = UwuUser.objects.get(user=user)
         
@@ -284,10 +303,12 @@ class MangaViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'author']
     ordering_fields = ['name', 'author', 'date']
     
-    @swagger_auto_schema(operation_description="It adds a chapter to a manga.", manual_parameters=[title_param, page_nb, order_nb], request_body=None)
+    @swagger_auto_schema(manual_parameters=[title_param, page_nb, order_nb], request_body=None)
     @action(detail=True, methods=['post'])
     def add_chapter(self, request, pk=None):
-
+        """
+        It adds a chapter to a manga.
+        """
         context = {'request':request}
         manga = Manga.objects.get(pk=pk)
         
@@ -317,6 +338,9 @@ class MangaViewSet(viewsets.ModelViewSet):
 
     @action(detail=True)
     def get_chapters(self, request, pk=None):
+        """
+        Get all chapter from the manga.
+        """
         context = {'request':request}
         queryset = Chapter.objects.all().filter(manga_id=pk).order_by('order')
         serializer = ChapterSerializer(queryset, many=True, context=context)
@@ -337,6 +361,9 @@ class MangaViewSet(viewsets.ModelViewSet):
         
     
     def retrieve(self, request, *args, **kwargs):
+        """
+        Get infromation of the manga.
+        """
         super_retrieve = super().retrieve(request, *args, **kwargs)
         
         chapters = super_retrieve.data['chapters']
@@ -365,6 +392,9 @@ class MangaViewSet(viewsets.ModelViewSet):
         return super_retrieve
 
     def list(self, request):
+        """
+        Get all manga's info.
+        """
         super_list = super().list(request)
         
         if isinstance(request.user, AnonymousUser):
@@ -391,6 +421,9 @@ class MangaViewSet(viewsets.ModelViewSet):
     
     @action(methods=['post'], detail=True)
     def add_remove_fav(self, request, pk=None):
+        """
+        Add or remove the manga to the current user.
+        """
         user = request.user
         user_uwu = UwuUser.objects.get(user=request.user)
         manga = Manga.objects.get(pk=pk)
@@ -412,6 +445,9 @@ class ChapterViewSet(viewsets.ModelViewSet):
     serializer_class = ChapterSerializer
 
     def retrieve(self, request, *args, **kwargs):
+        """
+        Get infromation of the Chapter.
+        """
         super_retrieve = super().retrieve(request, *args, **kwargs)
         
         if isinstance(request.user, AnonymousUser):
@@ -427,9 +463,9 @@ class ChapterViewSet(viewsets.ModelViewSet):
     
     @action(methods=['post'], detail=True)
     def add_remove_to_read(self, request, pk=None):
-        '''
+        """
         add or reamove the chapter in the user's readed chapter
-        '''
+        """
         
         user = User.objects.get(username=request.user)
         user_uwu = UwuUser.objects.get(user=user)
@@ -448,6 +484,9 @@ class ChapterViewSet(viewsets.ModelViewSet):
         
     
 class FriendRequestViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows chapters to be viewed or edited.
+    """
     queryset = FriendRequest.objects.all().order_by('-timestamp')
     serializer_class = FriendRequestSerializer
     permission_classes = [permissions.IsAuthenticated, ]
