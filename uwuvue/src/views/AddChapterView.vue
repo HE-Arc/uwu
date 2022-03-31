@@ -11,13 +11,13 @@
       </div>
 
       <div class="form-group mb-2">
-        <label for="orderInput">Chapter order</label>
-        <input v-model="order" type="number" required class="form-control" id="orderInput" placeholder="order"/>
+        <label for="pagesInput">Number of pages</label>
+        <input v-model="page_nb" type="number" required class="form-control" id="pagesInput" placeholder="pages"/>
       </div>
 
       <div class="form-group mb-2">
-        <label for="pagesInput">Chapter order</label>
-        <input v-model="page_nb" type="number" required class="form-control" id="pagesInput" placeholder="pages"/>
+        <label for="orderInput">Chapter order</label>
+        <input v-model="order" type="number" class="form-control" id="orderInput" placeholder="order"/>
       </div>
 
       <button class="btn btn-primary mb-2" type="button" disabled v-if="loading">
@@ -39,8 +39,8 @@ export default {
   data() {
     return {
       name: '',
-      order: '',
-      page_nb: '',
+      order: null,
+      page_nb: null,
       message: '',
       loading: false
     }
@@ -48,7 +48,7 @@ export default {
 
   methods: {
     addChapter() {
-      if (this.name == '' || this.order == '' || this.page_nb == '') {
+      if (this.name == '' || this.page_nb == '') {
         this.error = 'Inputs can\'t be empty'
         return
       }
@@ -57,16 +57,21 @@ export default {
       this.loading = true
 
       let data = {
-        'manga_id': this.$route.params.id,
         'title': this.name,
-        'order': this.order,
         'page_nb': this.page_nb
       }
 
-      api.post('/chapters/', data, {
+      if (this.order != null) {
+        data['order'] = this.order
+      }
+
+      api.post(`/mangas/${this.$route.params.id}/add_chapter/`, data, {
         headers: this.$store.getters.header
       })
       .then(() => {
+        this.name = '',
+        this.order = null,
+        this.page_nb = null,
         this.message = "Chapter added"
         this.loading = false
       })

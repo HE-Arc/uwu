@@ -6,11 +6,6 @@
       <div v-if="error" class="alert alert-info mb-2">{{error}}</div>
 
       <div class="form-group mb-2">
-        <label for="pictureInput">Manga picture</label>
-        <input type="file" class="form-control" accept=".jpg, .jpeg, .png" @change="pictureChanged" id="pictureInput"/>
-      </div>
-
-      <div class="form-group mb-2">
         <label for="nameInput">Manga name</label>
         <input v-model="name" type="text" required class="form-control" id="nameInput" placeholder="manga"/>
       </div>
@@ -28,6 +23,11 @@
       <div class="form-group mb-2">
         <label for="descriptionInput">Description</label>
         <textarea v-model="description" class="form-control" id="descriptionInput" placeholder="description"/>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="pictureInput">Manga picture</label>
+        <input type="file" class="form-control" accept=".jpg, .jpeg, .png" @change="pictureChanged" id="pictureInput"/>
       </div>
 
       <button class="btn btn-primary mb-2" type="button" disabled v-if="loading">

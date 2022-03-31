@@ -62,10 +62,10 @@ const routes = [
     meta: { title: 'Add manga' }
   },
   {
-    path: '/mangas/:id/modify',
+    path: '/mangas/:id/edit',
     name: 'modify-manga',
     component: () => import('../views/ModifyMangaView.vue'),
-    meta: { title: 'Modify manga' }
+    meta: { title: 'Edit manga' }
   },
   {
     path: '/mangas/:id/add',
