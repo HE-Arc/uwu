@@ -43,11 +43,11 @@ export default {
   },
 
   created() {
-    this.search()
+    this.fetch()
   },
 
   methods: {
-    search() {
+    fetch() {
       this.loading = true
 
       api.get(`/users/${this.$route.params.id}/get_favorites/`, {

@@ -48,7 +48,7 @@ export default {
 
   methods: {
     askFriend() {
-      api.post(`/user/${this.manga.pk}/addFriend/`, {}, {
+      api.post(`/user/${this.user.pk}/friend-requests_create`, {}, {
         headers: this.$store.getters.header
       })
       .then(() => {

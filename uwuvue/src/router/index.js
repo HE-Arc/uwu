@@ -38,6 +38,12 @@ const routes = [
     meta: { title: 'User search' }
   },
   {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('../views/ProfileView.vue'),
+    meta: { title: 'User profile' }
+  },
+  {
     path: '/users/:id',
     name: 'users',
     component: () => import('../views/UserView.vue'),
