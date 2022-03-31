@@ -30,10 +30,13 @@
     <div v-for="(manga, index) in favorites.slice(0,6)" :key="index" class="col">
       <manga-thumbnail :manga="manga" :simple="true"/>
     </div>
-  </div>
-      <div class="mb-4">
-           <router-link :to="'/users/' + user.pk + '/favorites'" type="button" class="btn btn-primary">more...</router-link>
-      </div>
+  </div>  
+    <router-link v-if="readed.length > 0" :to="'/users/' + user.pk + '/favorites'" type="button" class="btn btn-primary">more...</router-link>
+      
+    <div v-else class="row">
+      <div class="alert alert-primary col-lg-6" role="alert">No favorites manga</div>
+    </div>
+     
 
 
   

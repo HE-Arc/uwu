@@ -8,32 +8,40 @@
     </div>
   </div>
    <h2>Mangas readed</h2>
-  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4 flex-nowrap overflow-auto">
+  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4"  v-if="readed.length > 0">
     <div v-for="(manga, index) in readed.slice(0,6)" :key="index" class="col">
       <manga-thumbnail :manga="manga" :simple="true"/>
     </div> 
   </div>
-      <div class="mb-4">
-           <router-link :to="'/users/' + user.pk + '/readed'" type="button" class="btn btn-primary">more...</router-link>
-      </div> 
+      
+    <router-link v-if="readed.length > 0" :to="'/users/' + user.pk + '/readed'" type="button" class="btn btn-primary">more...</router-link>
+
+    <div v-else class="row">
+      <div class="alert alert-primary col-lg-6" role="alert">No manga readed</div>
+    </div>
+
+
   <h2>Favorites mangas</h2>
-  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4 flex-nowrap overflow-auto">
+  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4"  v-if="readed.length > 0">
     <div v-for="(manga, index) in favorites.slice(0,6)" :key="index" class="col">
       <manga-thumbnail :manga="manga" :simple="true"/>
     </div>
   </div>
-      <div class="mb-4">
-           <router-link :to="'/users/' + user.pk + '/favorites'" type="button" class="btn btn-primary">more...</router-link>
-      </div>
+    <router-link v-if="readed.length > 0" :to="'/users/' + user.pk + '/favorites'" type="button" class="btn btn-primary">more...</router-link>
+    <div v-else class="row">
+      <div class="alert alert-primary col-lg-6" role="alert">No favorites manga</div>
+    </div>
+
 <h2>My Friends</h2>
-  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4 flex-nowrap overflow-auto">
+  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4"  v-if="readed.length > 0">
     <div v-for="(friends, index) in friends.slice(0,6)" :key="index" class="col">
       <user-thumbnail :user="friends"/>
     </div>
   </div>
-      <div class="mb-4">
-           <router-link :to="'/users/' + user.pk " type="button" class="btn btn-primary">more...</router-link>
-      </div>
+     <router-link v-if="readed.length > 0" :to="'/users/' + user.pk " type="button" class="btn btn-primary">more...</router-link>
+     <div v-else class="row">
+      <div class="alert alert-primary col-lg-6" role="alert">No friends :'(</div>
+    </div>
   
 
 
