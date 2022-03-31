@@ -13,7 +13,7 @@
 
     <div class="col mb-4" v-if="isAdmin">
       <div class="row mb-2">
-        <router-link :to="'/mangas/' + this.$route.params.id + '/modify/'" class="btn btn-primary">
+        <router-link :to="'/mangas/' + this.$route.params.id + '/edit/'" class="btn btn-primary">
           edit manga
         </router-link>
       </div>
@@ -65,11 +65,12 @@ export default {
 
   created() {
     this.fetch()
+    this.checkAdmin()
 
     this.$watch(
       () => this.$store.getters.isLogged,
       () => {
-        this.fetch()
+        this.checkAdmin()
       }
     )
   },
@@ -84,6 +85,7 @@ export default {
       })
       .catch(error => {
         console.log(error)
+        this.$router.push('/404')
       })
 
       api.get(`/mangas/${this.$route.params.id}/get_chapters/`, {
@@ -95,7 +97,9 @@ export default {
       .catch(error => {
         console.log(error)
       })
+    },
 
+    checkAdmin() {
       api.get(`/users/is_admin/`, {
         headers: this.$store.getters.header
       })

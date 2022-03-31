@@ -1,5 +1,15 @@
 <template>
-  <h1 class="text-primary">uwu</h1>
+  <div class="row">
+    <div class="col-12 col-md-9 col-lg-10">
+      <h1 class="text-primary">uwu</h1>
+    </div>
+
+    <div class="col mb-4" v-if="isAdmin">
+      <div class="row mb-2">
+        <router-link :to="'/mangas/add/'" class="btn btn-primary">add manga</router-link>
+      </div>
+    </div>
+  </div>
 
   <h2>Recently updated</h2>
 
@@ -13,8 +23,8 @@
     <div class="alert alert-primary col-lg-6" role="alert">No result</div>
   </div>
 
-  <div v-if="next" class="position-relative">
-    <button @click="moreResult" class="btn btn-primary mt-4 position-absolute top-0 start-50 translate-middle">
+  <div v-if="next" class="text-center">
+    <button @click="moreResult" class="btn btn-primary mt-4">
       more results
     </button>
   </div>
@@ -37,12 +47,21 @@ export default {
       mangas: [],
       query: this.$route.params.query,
       loading: false,
+      isAdmin: false,
       next: null
     } 
   },
 
   created() {
     this.fetch()
+    this.checkAdmin()
+
+    this.$watch(
+      () => this.$store.getters.isLogged,
+      () => {
+        this.checkAdmin()
+      }
+    )
   },
 
   methods: {
@@ -76,7 +95,20 @@ export default {
       .catch(() =>
         this.loading = false
       )
+    },
+
+    checkAdmin() {
+      api.get(`/users/is_admin/`, {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        console.log(response.data)
+        this.isAdmin = response.data.is_admin
+      })
+      .catch(error => {
+        console.log(error)
+      })
     }
-  },
+  }
 }
 </script>
