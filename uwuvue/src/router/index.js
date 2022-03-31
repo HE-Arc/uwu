@@ -49,6 +49,7 @@ const routes = [
     component: () => import('../views/UserFavorites.vue'),
     meta: { title: 'Favorites' }
   },
+  {
     path: '/mangas/add',
     name: 'add-mangas',
     component: () => import('../views/AddMangaView.vue'),
