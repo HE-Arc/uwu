@@ -2,6 +2,7 @@ import json
 from turtle import title
 from unittest import result
 from PIL import Image
+import django
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django_filters.rest_framework import DjangoFilterBackend
@@ -91,6 +92,56 @@ class UserViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_409_CONFLICT)
         except:
             user.delete()
+    
+    @action(detail=True, methods=['post'])
+    def ask_friend(self, request, pk=None):
+        
+        
+        user = request.user
+        try:
+            other_user = User.objects.get(pk=pk)
+        except django.contrib.auth.models.User.DoesNotExist:
+            return Response({
+                                'status' : f'The user doesn\'t exist',
+                            }, 
+                            status=status.HTTP_400_BAD_REQUEST)
+            
+        
+        if user in other_user.friends.all():
+            return Response({
+                                'status' : f'{user} and {other_user} are already friend',
+                            }, 
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+        if user == other_user:
+            return Response({
+                                'status' : 'You can\'t send a friend request to yourself',
+                            }, 
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+        same_request = FriendRequest.objects.all().filter(sender = user, receiver = other_user, is_on_hold=True)
+        reverse_request = FriendRequest.objects.all().filter(sender = other_user, receiver = user, is_on_hold=True)
+        
+        if same_request.count() > 0:
+            return Response({
+                                'status' : 'the same request already exist',
+                            }, 
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+        if reverse_request.count() > 0:
+            return Response({
+                                'status' : f'{other_user} has already send a request to {user}',
+                            }, 
+                            status=status.HTTP_400_BAD_REQUEST)
+            
+        FriendRequest.objects.create(sender=user, receiver=other_user)
+        return Response({
+                            'status' : 'Friend request has been send',
+                        },
+                        status=status.HTTP_201_CREATED)
+        
+        
+        
     
     @action(detail=True)        
     def get_friends(self, request, pk=None):
@@ -335,9 +386,6 @@ class MangaViewSet(viewsets.ModelViewSet):
             
             favorites = user_uwu.favorites.all()
             r['isFavorite'] = r['url'].obj in favorites     
-                        
-            
-
 
         return super_list
     
@@ -353,7 +401,7 @@ class MangaViewSet(viewsets.ModelViewSet):
         else:
             user_uwu.favorites.remove(manga)
             return Response({'status':f'The manga has removed added from the {user}\'s favorites'}, status=status.HTTP_200_OK)
-         
+
     
     
 class ChapterViewSet(viewsets.ModelViewSet):
@@ -402,55 +450,13 @@ class ChapterViewSet(viewsets.ModelViewSet):
 class FriendRequestViewSet(viewsets.ModelViewSet):
     queryset = FriendRequest.objects.all().order_by('-timestamp')
     serializer_class = FriendRequestSerializer
-    permission_classes = [permissions.IsAuthenticated ]
+    permission_classes = [permissions.IsAuthenticated, ]
     
-    def create(self, request):
-        sender = User.objects.get(username=request.user)
-        
-        try:
-            receiver = User.objects.get(pk = request.data['other_user'])
-        except:
-            receiver = User.objects.get(username = request.data['other_user'])
-        
-        if sender == receiver:
-            return Response({
-                                'status' : 'You can\'t send a friend request to yourself',
-                            }, 
-                            status=status.HTTP_400_BAD_REQUEST)
-           
-        sender_uwu = UwuUser.objects.get(user = sender)    
-        if sender_uwu.is_friend(receiver):
-            return Response({
-                                'status' : f'{sender} and {receiver} are already friend',
-                            }, 
-                            status=status.HTTP_400_BAD_REQUEST)
-        
-        same_request = FriendRequest.objects.all().filter(sender = sender, receiver = receiver, is_on_hold=True)
-        reverse_request = FriendRequest.objects.all().filter(sender = receiver, receiver = sender, is_on_hold=True)
-        
-        if same_request.count() > 0:
-            return Response({
-                                'status' : 'the same request already exist',
-                            }, 
-                            status=status.HTTP_400_BAD_REQUEST)
-        
-        if reverse_request.count() > 0:
-            return Response({
-                                'status' : f'{receiver} has already send a request to {sender}',
-                            }, 
-                            status=status.HTTP_400_BAD_REQUEST)
-        
-        FriendRequest.objects.create(sender=sender, receiver=receiver)
-        return Response({
-                            'status' : 'Friend request has been send',
-                        },
-                        status=status.HTTP_201_CREATED)
         
     @action(detail=True, methods=['post'])
     def accept(self, request, pk=None):
         """
         Accept a friend request
-        Update both 'sender' and 'receiver' 'friends' field
         """
         try:
             friend_request = FriendRequest.objects.get(pk = pk)
@@ -487,16 +493,24 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
                             'status' : 'Friend request has been accepted',
                         },
                         status=status.HTTP_202_ACCEPTED)
-
-
-    def get_queryset(self):
+    
+    def list(self, request):
+        """
+        Get every friends requests in wich you are involve.
+        """
+        context = {'request':request}
         queryset = self.queryset.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
-        return queryset
+        serializer = FriendRequestSerializer(queryset, many=True, context=context)
+        
+        return Response(serializer.data)
     
     @action(detail=False)
     def get_active_friend_request(self, request):
+        """
+        Get every friends requests that ar adressed to you.
+        """
         
-        user = User.objects.get(username=request.user)
+        user = request.user
         
         friend_requests = FriendRequest.objects.all().filter(receiver=user).order_by('-timestamp')
 
