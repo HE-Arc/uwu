@@ -57,6 +57,8 @@ export default {
       user: {},
       favorites:[],
       readed:[],
+      readedNext: null,
+      favoriteNext: null,
     }
   },
 
@@ -76,17 +78,19 @@ export default {
     })
     .then(response => {
         this.favorites = response.data.results
+        this.favoriteNext = response.data.next
     })
     .catch(error => {
         console.log(error)
     })
 
     
-     api.get(`/users/${this.$route.params.id}/get_readed/`, {
+     api.get(`/users/${this.$route.params.id}/get_readed_mangas/`, {
         headers: this.$store.getters.header
     })
     .then(response => {
         this.readed = response.data.results
+        this.readedNext = response.data.next
     })
     .catch(error => {
         console.log(error)

@@ -50,6 +50,12 @@ const routes = [
     meta: { title: 'Favorites' }
   },
   {
+    path: '/users/:id/readed',
+    name: 'users-readed',
+    component: () => import('../views/UserReaded.vue'),
+    meta: { title: 'Readed' }
+  },
+  {
     path: '/mangas/add',
     name: 'add-mangas',
     component: () => import('../views/AddMangaView.vue'),

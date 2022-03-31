@@ -1,14 +1,12 @@
 <template>
- 
     <div>
-        <h1>Favorites manga</h1>
+        <h1>Mangas readed</h1>
     </div>
   <div v-if="mangas.length > 0 || loading" class="row">
     <div v-for="(manga, index) in mangas" :key="index" class="col-6 col-md-3 col-lg-2">
-      <manga-thumbnail :manga="manga" :simple="true"/>
+      <manga-thumbnail :manga="manga"/>
     </div>
   </div>
-
   <div v-else class="row">
     <div class="alert alert-primary col-lg-6" role="alert">No result</div>
   </div>
@@ -26,7 +24,7 @@ import api from '@/api'
 import MangaThumbnail from '@/components/MangaThumbnail.vue'
 
 export default {
-  name : 'FavoritesView',
+  name : 'ReadedView',
 
   components: {
     MangaThumbnail
@@ -50,7 +48,7 @@ export default {
     search() {
       this.loading = true
 
-      api.get(`/users/${this.$route.params.id}/get_favorites/`, {
+      api.get(`/users/${this.$route.params.id}/get_readed_mangas/`, {
         headers: this.$store.getters.header
       })
       .then(response => {
