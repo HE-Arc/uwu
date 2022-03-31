@@ -5,10 +5,24 @@
       <img :src="manga.image" class="img-fluid rounded mb-4"/>
     </div>
 
-    <div class="col mb-4">
+    <div class="col-8 col-md-7 col-lg-8 mb-4">
       <h1 class="text-primary">{{manga.name}}</h1>
       <p>{{manga.author}} - {{manga.date}}</p>
       <p>{{manga.description}}</p>
+    </div>
+
+    <div class="col mb-4" v-if="isAdmin">
+      <div class="row mb-2">
+        <router-link :to="'/mangas/' + this.$route.params.id + '/modify/'" class="btn btn-primary">
+          edit manga
+        </router-link>
+      </div>
+
+      <div class="row">
+        <router-link :to="'/mangas/' + this.$route.params.id + '/add/'" class="btn btn-primary">
+          add chapter
+        </router-link>
+      </div>
     </div>
   </div>
 
@@ -44,12 +58,20 @@ export default {
   data() {
     return {
       manga: {},
-      chapters: {}
+      chapters: {},
+      isAdmin: false
     }
   },
 
   created() {
     this.fetch()
+
+    this.$watch(
+      () => this.$store.getters.isLogged,
+      () => {
+        this.fetch()
+      }
+    )
   },
 
   methods: {
@@ -69,6 +91,17 @@ export default {
       })
       .then(response => {
         this.chapters = response.data
+      })
+      .catch(error => {
+        console.log(error)
+      })
+
+      api.get(`/users/is_admin/`, {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        console.log(response.data)
+        this.isAdmin = response.data.is_admin
       })
       .catch(error => {
         console.log(error)
