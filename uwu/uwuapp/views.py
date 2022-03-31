@@ -5,6 +5,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions, filters, status, pagination
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from uwu.settings import BASE_DIR
 from uwu.uwuapp.serializers import ChapterSerializer, FriendRequestSerializer, UwuUserSerializer, MangaSerializer, UserSerializer
 from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 from rest_framework.authtoken.models import Token
@@ -152,7 +153,8 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = UserSerializer(results, many=True, context=context)
         if len(serializer.data) > 0:
             for f in serializer.data:
-                f['image'] = UwuUser.objects.get(user=f['url'].obj).image.url
+                
+                f['image'] = request.build_absolute_uri(UwuUser.objects.get(user=f['url'].obj).image.url)
         
         response = paginator.get_paginated_response(serializer.data)
 
