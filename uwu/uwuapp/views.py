@@ -14,6 +14,14 @@ from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 from rest_framework.authtoken.models import Token
 from django.db.models import Q
 from django.contrib.auth.models import AnonymousUser
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
+
+
+title_param = openapi.Parameter('Title', openapi.IN_QUERY, description="chapter's title", type=openapi.TYPE_STRING, required=True)
+page_nb = openapi.Parameter('Page nb', openapi.IN_QUERY, description="chapter's page number", type=openapi.TYPE_NUMBER, required=True)
+order_nb = openapi.Parameter('Order', openapi.IN_QUERY, description="chapter's order", type=openapi.TYPE_NUMBER)
 
 class UwuUserViewSet(viewsets.ModelViewSet):
     """
@@ -28,7 +36,7 @@ class UwuUserViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def unfriend(self, request, pk=None):
         """
-        Unfriendinmg someone from the 'friends'
+        Unfriending someone from the 'friends'
         """       
 
         user_uwu = UwuUser.objects.get(pk=pk)
@@ -129,13 +137,14 @@ class UserViewSet(viewsets.ModelViewSet):
         response = paginator.get_paginated_response(serializer.data)
 
         return response
-
+    
     @action(detail=True)        
     def get_readed_mangas(self, request, pk=None):
         paginator = pagination.PageNumberPagination()
         context = {'request':request}
         user = User.objects.get(pk=pk)
         uwu_user = UwuUser.objects.get(user=user)
+        readed_chapters = uwu_user.readed.all()
         results = uwu_user.readed.all().order_by('page_nb')           
 
         if len(results) > 0:
@@ -145,10 +154,23 @@ class UserViewSet(viewsets.ModelViewSet):
 
             mangas = set(mangas)
             results = Manga.objects.filter(pk__in=mangas).all().order_by('pk')
+                
             results = paginator.paginate_queryset(results, request)
             serializer = MangaSerializer(results, many=True, context=context)
+            response = paginator.get_paginated_response(serializer.data)
+            
+            for r in response.data['results']:
+                progress = 0
+                if len(r['chapters']):
+                    chapters = uwu_user.readed.all()
+                    for c in r['chapters']:
+                        if c.obj in chapters:
+                            progress += 1
+                    progress = progress*100/len(r['chapters'])
+                
+                r['progress'] = progress
 
-            return paginator.get_paginated_response(serializer.data)
+            return response
         
         return Response({})
 
@@ -211,8 +233,10 @@ class MangaViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'author']
     ordering_fields = ['name', 'author', 'date']
     
+    @swagger_auto_schema(operation_description="It adds a chapter to a manga.", manual_parameters=[title_param, page_nb, order_nb], request_body=None)
     @action(detail=True, methods=['post'])
     def add_chapter(self, request, pk=None):
+
         context = {'request':request}
         manga = Manga.objects.get(pk=pk)
         
