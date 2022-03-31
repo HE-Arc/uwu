@@ -26,7 +26,7 @@ import api from '@/api'
 import MangaThumbnail from '@/components/MangaThumbnail.vue'
 
 export default {
-  name : 'SearchView',
+  name : 'FavoritesView',
 
   components: {
     MangaThumbnail

@@ -1,5 +1,4 @@
 <template>
- 
     <div>
         <h1>Mangas readed</h1>
     </div>
@@ -8,7 +7,6 @@
       <manga-thumbnail :manga="manga"/>
     </div>
   </div>
-
   <div v-else class="row">
     <div class="alert alert-primary col-lg-6" role="alert">No result</div>
   </div>
@@ -26,7 +24,7 @@ import api from '@/api'
 import MangaThumbnail from '@/components/MangaThumbnail.vue'
 
 export default {
-  name : 'SearchView',
+  name : 'ReadedView',
 
   components: {
     MangaThumbnail

@@ -85,7 +85,7 @@ export default {
     })
 
     
-     api.get(`/users/${this.$route.params.id}/get_readed/`, {
+     api.get(`/users/${this.$route.params.id}/get_readed_mangas/`, {
         headers: this.$store.getters.header
     })
     .then(response => {
