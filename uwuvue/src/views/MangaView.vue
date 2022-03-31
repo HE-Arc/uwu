@@ -85,6 +85,7 @@ export default {
       })
       .catch(error => {
         console.log(error)
+        this.$router.push('/404')
       })
 
       api.get(`/mangas/${this.$route.params.id}/get_chapters/`, {

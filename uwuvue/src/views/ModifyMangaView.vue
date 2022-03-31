@@ -73,6 +73,7 @@ export default {
     })
     .catch(error => {
       console.log(error)
+      this.$router.push("/404")
     })
   },
 
