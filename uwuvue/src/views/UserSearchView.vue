@@ -24,8 +24,8 @@
     <div class="alert alert-primary col-lg-6" role="alert">No result</div>
   </div>
 
-  <div v-if="next" class="position-relative">
-    <button @click="moreResult" class="btn btn-primary mt-4 position-absolute top-0 start-50 translate-middle">
+  <div v-if="next" class="text-center">
+    <button @click="moreResult" class="btn btn-primary mt-4">
       more results
     </button>
   </div>
@@ -37,7 +37,7 @@ import api from '@/api'
 import UserThumbnail from '@/components/UserThumbnail.vue'
 
 export default {
-  name : 'SearchView',
+  name : 'UserSearchView',
 
   components: {
     UserThumbnail
@@ -75,7 +75,7 @@ export default {
 
     search() {
       if (this.$route.params.query == "") {
-        return;
+        return
       }
 
       this.loading = true

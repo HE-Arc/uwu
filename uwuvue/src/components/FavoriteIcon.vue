@@ -46,7 +46,7 @@ export default {
         headers: this.$store.getters.header
       })
       .then(() => {
-        this.isFavorite = !this.isFavorite;
+        this.isFavorite = !this.isFavorite
       })
     }
   }

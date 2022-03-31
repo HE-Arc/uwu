@@ -1,6 +1,6 @@
 <template>
 <div>
-    <favorite-icon :manga="manga"/>
+    <favorite-icon :manga="manga" v-if="!simple"/>
 
     <router-link :to="'/mangas/' + manga.pk">
       <img :src="manga.image" class="img-fluid rounded mb-3">
@@ -25,7 +25,8 @@ export default {
   },
 
   props: {
-    manga: Object
+    manga: Object,
+    simple: Boolean
   }
 }
 </script>

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'uwu.uwuapp',
+    'drf_yasg',
 ]
 
 REST_FRAMEWORK = {

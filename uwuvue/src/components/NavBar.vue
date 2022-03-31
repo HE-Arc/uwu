@@ -1,7 +1,9 @@
 <template>
   <nav class="navbar sticky-top navbar-expand-md navbar-dark bg-dark">
     <div class="container-fluid">
-      <router-link to="/" class="navbar-brand text-primary" @click="hideNavBar">uwu</router-link>
+      <router-link to="/" class="navbar-brand text-primary" @click="hideNavBar">
+        <img src="/uwu.png" height="24"/>
+      </router-link>
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" id="lol">
         <span class="navbar-toggler-icon"/>
@@ -9,7 +11,6 @@
 
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav me-auto" @click="hideNavBar">
-          <router-link to="/about" class="nav-link">about</router-link>
           <router-link to="/users/search" class="nav-link">search users</router-link>
           <router-link to="/user" v-if="$store.getters.isLogged" class="nav-link">user</router-link>
         </div>

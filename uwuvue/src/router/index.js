@@ -8,12 +8,6 @@ const routes = [
     meta: { title: 'Home' }
   },
   {
-    path: '/about',
-    name: 'about',
-    component: () => import('../views/AboutView.vue'),
-    meta: { title: 'About' }
-  },
-  {
     path: '/mangas/:id',
     name: 'manga',
     component: () => import('../views/MangaView.vue'),
@@ -42,6 +36,48 @@ const routes = [
     name: 'users-search',
     component: () => import('../views/UserSearchView.vue'),
     meta: { title: 'User search' }
+  },
+  {
+    path: '/users/:id',
+    name: 'users',
+    component: () => import('../views/UserView.vue'),
+    meta: { title: 'User' }
+  },
+  {
+    path: '/users/:id/favorites',
+    name: 'users-favorites',
+    component: () => import('../views/UserFavorites.vue'),
+    meta: { title: 'Favorites' }
+  },
+  {
+    path: '/users/:id/readed',
+    name: 'users-readed',
+    component: () => import('../views/UserReaded.vue'),
+    meta: { title: 'Readed' }
+  },
+  {
+    path: '/mangas/add',
+    name: 'add-mangas',
+    component: () => import('../views/AddMangaView.vue'),
+    meta: { title: 'Add manga' }
+  },
+  {
+    path: '/mangas/:id/edit',
+    name: 'modify-manga',
+    component: () => import('../views/ModifyMangaView.vue'),
+    meta: { title: 'Edit manga' }
+  },
+  {
+    path: '/mangas/:id/add',
+    name: 'add-chapters',
+    component: () => import('../views/AddChapterView.vue'),
+    meta: { title: 'Add chapter' }
+  },
+  {
+    path: '/:catchAll(.*)',
+    name: '404',
+    component: () => import('../views/404View.vue'),
+    meta: { title: '404' }
   }
 ]
 

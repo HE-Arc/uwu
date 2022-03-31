@@ -2,16 +2,26 @@
   <div class="row">
     <form @submit.prevent="searchPressed" class="col-md-9 col-lg-6">
       <div class="input-group mb-4">
-          <input v-model="query" type="search" class="form-control form-control-lg" placeholder="Search mangas">
-          
-          <button class="btn btn-primary" type="button" disabled v-if="loading">
-            <span class="spinner-border spinner-border-sm" role="status"></span>
-            loading...
-          </button>
+        <input v-model="query" type="search" class="form-control form-control-lg" placeholder="Search mangas">
+        
+        <button class="btn btn-primary" type="button" disabled v-if="loading">
+          <span class="spinner-border spinner-border-sm" role="status"></span>
+          loading...
+        </button>
 
-          <button type="submit" class="btn btn-primary" v-else>search</button>
+        <button type="submit" class="btn btn-primary" v-else>search</button>
       </div>
     </form>
+
+    <div class="col-6 col-md-3 mb-4 ms-auto mt-auto">
+      <select v-model="order" @change="search" class="form-select">
+        <option value="" selected>Order by</option>
+        <option value="name">Name ↑</option>
+        <option value="-name">Name ↓</option>
+        <option value="date">Date ↑</option>
+        <option value="-date">Date ↓</option>
+      </select>
+    </div>
   </div>
 
   <div v-if="mangas.length > 0 || loading" class="row">
@@ -24,8 +34,8 @@
     <div class="alert alert-primary col-lg-6" role="alert">No result</div>
   </div>
 
-  <div v-if="next" class="position-relative">
-    <button @click="moreResult" class="btn btn-primary mt-4 position-absolute top-0 start-50 translate-middle">
+  <div v-if="next" class="text-center">
+    <button @click="moreResult" class="btn btn-primary mt-4">
       more results
     </button>
   </div>
@@ -47,6 +57,7 @@ export default {
     return {
       mangas: [],
       query: this.$route.params.query,
+      order: '',
       loading: false,
       next: null
     }
@@ -54,13 +65,6 @@ export default {
 
   created() {
     this.search()
-
-    this.$watch(
-      () => this.$route.params,
-      () => {
-        this.search()
-      }
-    )
   },
 
   methods: {
@@ -71,6 +75,9 @@ export default {
           query: this.query
         }
       })
+      .then(() => {
+        this.search()
+      })
     },
 
     search() {
@@ -78,7 +85,8 @@ export default {
 
       api.get('/mangas/', {
         params: {
-          search: this.$route.params.query
+          search: this.$route.params.query,
+          ordering: this.order
         },
 
         headers: this.$store.getters.header

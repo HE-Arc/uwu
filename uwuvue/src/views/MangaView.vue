@@ -5,10 +5,24 @@
       <img :src="manga.image" class="img-fluid rounded mb-4"/>
     </div>
 
-    <div class="col mb-4">
+    <div class="col-8 col-md-7 col-lg-8 mb-4">
       <h1 class="text-primary">{{manga.name}}</h1>
       <p>{{manga.author}} - {{manga.date}}</p>
       <p>{{manga.description}}</p>
+    </div>
+
+    <div class="col mb-4" v-if="isAdmin">
+      <div class="row mb-2">
+        <router-link :to="'/mangas/' + this.$route.params.id + '/edit/'" class="btn btn-primary">
+          edit manga
+        </router-link>
+      </div>
+
+      <div class="row">
+        <router-link :to="'/mangas/' + this.$route.params.id + '/add/'" class="btn btn-primary">
+          add chapter
+        </router-link>
+      </div>
     </div>
   </div>
 
@@ -18,7 +32,7 @@
     </div>
   </div>
 
-  <div v-if="chapters.length > 0" class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4">
+  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4">
     <div v-for="(chapter, index) in chapters" :key="index" class="col">
       <chapter-button :chapter="chapter" @toggle="fetch"/>
     </div>
@@ -44,12 +58,21 @@ export default {
   data() {
     return {
       manga: {},
-      chapters: {}
+      chapters: {},
+      isAdmin: false
     }
   },
 
   created() {
     this.fetch()
+    this.checkAdmin()
+
+    this.$watch(
+      () => this.$store.getters.isLogged,
+      () => {
+        this.checkAdmin()
+      }
+    )
   },
 
   methods: {
@@ -58,11 +81,11 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        console.log(response.data)
         this.manga = response.data
       })
       .catch(error => {
         console.log(error)
+        this.$router.push('/404')
       })
 
       api.get(`/mangas/${this.$route.params.id}/get_chapters/`, {
@@ -70,6 +93,19 @@ export default {
       })
       .then(response => {
         this.chapters = response.data
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    },
+
+    checkAdmin() {
+      api.get(`/users/is_admin/`, {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        console.log(response.data)
+        this.isAdmin = response.data.is_admin
       })
       .catch(error => {
         console.log(error)

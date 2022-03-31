@@ -5,11 +5,6 @@
       <div v-if="error" class="alert alert-info mb-2">{{error}}</div>
 
       <div class="form-group mb-2">
-        <label for="pictureInput">Profile picture</label>
-        <input type="file" class="form-control" accept=".jpg, .jpeg, .png" @change="pictureChanged" id="pictureInput">
-      </div>
-
-      <div class="form-group mb-2">
         <label for="userInput">Username</label>
         <input v-model="username" type="text" required class="form-control" id="userInput" placeholder="username">
       </div>
@@ -24,10 +19,16 @@
         <input v-model="repeatPassword" type="password" required class="form-control" id="repeatInput" placeholder="password">
       </div>
 
+      <div class="form-group mb-3">
+        <label for="pictureInput">Manga picture</label>
+        <input type="file" class="form-control" accept=".jpg, .jpeg, .png" @change="pictureChanged" id="pictureInput"/>
+      </div>
+
       <button class="btn btn-primary mb-2" type="button" disabled v-if="loading">
         <span class="spinner-border spinner-border-sm" role="status"></span>
         loading...
       </button>
+
       <button type="submit" class="btn btn-primary mb-2 me-2" v-else>sign up</button>
       <router-link to="/login">Already have an account?</router-link>
     </form>
@@ -38,7 +39,7 @@
 import api from '@/api'
 
 export default {
-  name : 'MangaView',
+  name : 'SignupView',
 
   components: {
   },
@@ -62,18 +63,18 @@ export default {
     signup() {
       if (this.username == '' || this.password == '' || this.repeatPassword == '') {
         this.error = 'Inputs can\'t be empty'
-        return;
+        return
       }
 
       if (this.password != this.repeatPassword) {
         this.error = 'Passwords don\'t match'
-        return;
+        return
       }
 
       this.error = ''
       this.loading = true
 
-      let data =  new FormData();
+      let data =  new FormData()
       data.append('username', this.username)
       data.append('password', this.password)
 
@@ -82,14 +83,14 @@ export default {
       }
 
       api.post('/users/', data, {
-        headers: { "Content-Type": "multipart/form-data" }
+        headers: { 'Content-Type': 'multipart/form-data' }
       })
       .then(response => {
         this.$store.dispatch('login', {
           token: response.data.token
         })
 
-        this.$router.go(-1)
+        this.$router.back()
         this.loading = false
       })
       .catch(error => {
@@ -99,6 +100,12 @@ export default {
 
         this.loading = false
       })
+    }
+  },
+
+  created() {
+    if (this.$store.getters.isLogged) {
+      this.$router.back()
     }
   }
 }
