@@ -28,7 +28,7 @@
 import api from '@/api'
 
 export default {
-  name : 'MangaView',
+  name : 'LoginView',
 
   components: {
   },
@@ -46,7 +46,7 @@ export default {
     login() {
       if (this.username == '' || this.password == '') {
         this.error = 'Inputs can\'t be empty'
-        return;
+        return
       }
 
       this.error = ''

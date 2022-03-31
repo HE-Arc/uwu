@@ -37,7 +37,7 @@ import api from '@/api'
 import UserThumbnail from '@/components/UserThumbnail.vue'
 
 export default {
-  name : 'SearchView',
+  name : 'UserSearchView',
 
   components: {
     UserThumbnail
@@ -75,7 +75,7 @@ export default {
 
     search() {
       if (this.$route.params.query == "") {
-        return;
+        return
       }
 
       this.loading = true
