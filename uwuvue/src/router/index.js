@@ -68,6 +68,12 @@ const routes = [
     meta: { title: 'Friends' }
   },
   {
+    path: '/users/:id/requests',
+    name: 'users-requests',
+    component: () => import('../views/FriendRequestView.vue'),
+    meta: { title: 'Requests' }
+  },
+  {
     path: '/mangas/add',
     name: 'add-mangas',
     component: () => import('../views/AddMangaView.vue'),

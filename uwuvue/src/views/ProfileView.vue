@@ -5,6 +5,8 @@
     </div>
     <div class="col mb-4">
       <h1 class="text-primary">{{user.username}}</h1>
+          <p class="text-secondary">Pages readed : {{user.users_total_pages_readed}}</p>
+          <router-link :to="'/users/' + user.pk + '/requests'" class="btn btn-primary">Friend requests</router-link>
     </div>
   </div>
    <h2>Mangas readed</h2>

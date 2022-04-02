@@ -35,11 +35,6 @@
     <div v-else class="row">
       <div class="alert alert-primary col-lg-6" role="alert">No favorites manga</div>
     </div>
-     
-
-
-  
-
 </template>
 
 <script>
