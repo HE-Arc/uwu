@@ -1,40 +1,39 @@
 <template>
  
     <div>
-        <h1>Favorites manga</h1>
+        <h1 class="text-primary">New friends requests</h1>
     </div>
-  <div v-if="mangas.length > 0 || loading" class="row">
-    <div v-for="(manga, index) in mangas" :key="index" class="col-6 col-md-3 col-lg-2">
-      <manga-thumbnail :manga="manga" :simple="true"/>
+  <div v-if="friends.length > 0 || loading" class="row">
+    <div v-for="(friend, index) in friends" :key="index" class="col-6 col-md-3 col-lg-2">
+      <user-thumbnail :user="friend"/>
     </div>
   </div>
 
   <div v-else class="row">
-    <div class="alert alert-primary col-lg-6" role="alert">No result</div>
+    <div class="alert alert-primary col-lg-6" role="alert">No new requests :(</div>
   </div>
-
-  <div v-if="next" class="text-center">
-    <button @click="moreResult" class="btn btn-primary mt-4">
-      more results
-    </button>
+  <div v-if="next" class="position-relative">
+      <button @click="moreResult" class="btn btn-primary mt-4 position-absolute top-0 start-50 translate-middle">
+          more results
+      </button>
   </div>
 </template>
 
 <script>
 import api from '@/api'
 
-import MangaThumbnail from '@/components/MangaThumbnail.vue'
+import UserThumbnail from '../components/UserThumbnail.vue'
 
 export default {
-  name : 'FavoritesView',
+  name : 'FriendRequest',
 
   components: {
-    MangaThumbnail
+    UserThumbnail
   },
 
   data() {
     return {
-      mangas: [],
+      friends: [],
       query: this.$route.params.query,
       order: '',
       loading: false,
@@ -50,11 +49,11 @@ export default {
     fetch() {
       this.loading = true
 
-      api.get(`/users/${this.$route.params.id}/get_favorites/`, {
+      api.get(`/users/${this.$route.params.id}/get_friend-requests/`, {
         headers: this.$store.getters.header
       })
       .then(response => {
-        this.mangas = response.data.results
+        this.friends = response.data.results
         this.next = response.data.next
         this.loading = false
       })
@@ -70,7 +69,7 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        this.mangas.push.apply(this.mangas, response.data.results)
+        this.friends.push.apply(this.friends, response.data.results)
         this.next = response.data.next
         this.loading = false
       })

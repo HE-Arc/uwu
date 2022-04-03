@@ -4,7 +4,7 @@
     </div>
   <div v-if="mangas.length > 0 || loading" class="row">
     <div v-for="(manga, index) in mangas" :key="index" class="col-6 col-md-3 col-lg-2">
-      <manga-thumbnail :manga="manga"/>
+      <manga-thumbnail :manga="manga" :simple="true"/>
     </div>
   </div>
   <div v-else class="row">
@@ -41,11 +41,11 @@ export default {
   },
 
   created() {
-    this.search()
+    this.fetch()
   },
 
   methods: {
-    search() {
+    fetch() {
       this.loading = true
 
       api.get(`/users/${this.$route.params.id}/get_readed_mangas/`, {
@@ -55,6 +55,7 @@ export default {
         this.mangas = response.data.results
         this.next = response.data.next
         this.loading = false
+     
       })
       .catch(() => {
         this.loading = false

@@ -38,6 +38,12 @@ const routes = [
     meta: { title: 'User search' }
   },
   {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('../views/ProfileView.vue'),
+    meta: { title: 'User profile' }
+  },
+  {
     path: '/users/:id',
     name: 'users',
     component: () => import('../views/UserView.vue'),
@@ -54,6 +60,18 @@ const routes = [
     name: 'users-readed',
     component: () => import('../views/UserReaded.vue'),
     meta: { title: 'Readed' }
+  },
+  {
+    path: '/users/:id/friends',
+    name: 'users-friends',
+    component: () => import('../views/UserFriendsView.vue'),
+    meta: { title: 'Friends' }
+  },
+  {
+    path: '/users/:id/requests',
+    name: 'users-requests',
+    component: () => import('../views/FriendRequestView.vue'),
+    meta: { title: 'Requests' }
   },
   {
     path: '/mangas/add',
