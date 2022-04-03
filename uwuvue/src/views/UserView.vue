@@ -7,6 +7,8 @@
 
     <div class="col mb-4">
       <h1 class="text-primary">{{user.username}}</h1>
+       <p v-if="this.pages > 0" class="text-secondary">Pages readed : {{this.pages}}</p>
+       <p v-else class="text-secondary">Never read mangas</p>
     </div>
   </div>
 
@@ -59,6 +61,7 @@ export default {
       readed:[],
       readedNext: null,
       favoriteNext: null,
+      pages: null,
     }
   },
 
@@ -89,17 +92,30 @@ export default {
     
      api.get(`/users/${this.$route.params.id}/get_readed_mangas/`, {
         headers: this.$store.getters.header
-    })
-    .then(response => {
-      if(response.data.results) {
-        this.readed = response.data.results
-        this.readedNext = response.data.next
-      }
-    })
-    .catch(error => {
-        console.log(error)
-    })
+        })
+        .then(response => {
+          if(response.data.results) {
+            this.readed = response.data.results
+            this.readedNext = response.data.next
+        }
+        })
+        .catch(error => {
+          console.log(error)
+        })
 
+    api.get(`users/${this.$route.params.id}/total_pages_readed/`, {
+        headers: this.$store.getters.header
+        })
+        
+        .then(response => {
+            console.log(response)
+            if(response.data.pages_readed){
+                this.pages = response.data.pages_readed
+            }           
+        })
+        .catch(error => {
+            console.log(error)
+        })
   }
 }
 </script>

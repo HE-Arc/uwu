@@ -5,7 +5,8 @@
     </div>
     <div class="col mb-4">
       <h1 class="text-primary">{{user.username}}</h1>
-          <p class="text-secondary">Pages readed : {{user.users_total_pages_readed}}</p>
+           <p v-if="this.pages > 0" class="text-secondary">Pages readed : {{this.pages}}</p>
+           <p v-else class="text-secondary">Never read mangas</p>
           <router-link :to="'/users/' + user.pk + '/requests'" class="btn btn-primary">Friend requests</router-link>
     </div>
   </div>
@@ -72,6 +73,7 @@ export default {
       readedNext: null,
       favoriteNext: null,
       friendNext: null,
+      pages : null
     }
   },
 
@@ -135,6 +137,20 @@ export default {
             if(response.data.results){
                 this.friends = response.data.results
                 this.friendNext = response.data.next
+            }           
+        })
+        .catch(error => {
+            console.log(error)
+        })
+
+        api.get(`users/${this.user.pk}/total_pages_readed/`, {
+        headers: this.$store.getters.header
+        })
+        
+        .then(response => {
+            console.log(response)
+            if(response.data.pages_readed){
+                this.pages = response.data.pages_readed
             }           
         })
         .catch(error => {
