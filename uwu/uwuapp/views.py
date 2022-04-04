@@ -30,28 +30,6 @@ class UwuUserViewSet(viewsets.ModelViewSet):
     search_fields = ['user__username',] 
     
 
-    @action(detail=True, methods=['post'])
-    def unfriend(self, request, pk=None):
-        """
-        Unfriending someone from the friends
-        """       
-
-        user_uwu = UwuUser.objects.get(pk=pk)
-        other_user = UwuUser.objects.get(user=request.data['other_user'])
-        
-        if user_uwu.is_friend(other_user):
-            user_uwu.remove_friend(other_user.user)
-            other_user.remove_friend(user_uwu.user)
-            return Response({
-                                'status' : f'{user_uwu} and {other_user} are not friend anymore',
-                            }, 
-                            status=status.HTTP_200_OK)
-        else:
-            return Response({
-                                'status' : f'{user_uwu} and {other_user} are already not friend',
-                            }, 
-                            status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -61,6 +39,20 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('date_joined')
     serializer_class = UserSerializer
     permissions_class = [permissions.IsAdminUser,]
+    
+    def retrieve(self, request, *args, **kwargs):
+        super_retrieve = super().retrieve(request, *args, **kwargs)
+        user = super_retrieve.data['url'].obj
+        uwu_user = UwuUser.objects.get(user = user)
+        super_retrieve.data['image'] = request.build_absolute_uri(uwu_user.image.url)
+        return super_retrieve
+    
+    def list(self, request):
+        super_list = super().list(request)
+        for user in super_list.data['results']:
+            uwu_user = UwuUser.objects.get(user = user['url'].obj)
+            user['image'] = request.build_absolute_uri(uwu_user.image.url)
+        return super_list
 
     
     def create(self, validated_data):
@@ -88,6 +80,33 @@ class UserViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_409_CONFLICT)
         except:
             user.delete()
+    
+    
+    @action(detail=True, methods=['post'])
+    def unfriend(self, request, pk=None):
+        """
+        Unfriending someone from the friends
+        """       
+        user = request.user
+        other_user = User.objects.get(pk=pk)
+
+        user_uwu = UwuUser.objects.get(user=user)
+        other_uwu_user = UwuUser.objects.get(user=other_user)
+        
+        if user_uwu.is_friend(other_user):
+            print("user: " + str(type(user)))
+            print("other_user: " + str(type(other_user)))
+            user_uwu.remove_friend(other_user)
+            other_uwu_user.remove_friend(user)
+            return Response({
+                                'status' : f'{user} and {other_user} are not friend anymore',
+                            }, 
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({
+                                'status' : f'{user_uwu} and {other_uwu_user} are already not friend',
+                            }, 
+                            status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=True, methods=['post'])
     def ask_friend(self, request, pk=None):

@@ -1,6 +1,4 @@
-from asyncore import read
 from django.contrib.auth.models import User
-from django.dispatch import receiver
 from rest_framework import serializers
 from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 
