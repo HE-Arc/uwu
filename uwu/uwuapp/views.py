@@ -493,6 +493,17 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
     serializer_class = FriendRequestSerializer
     permission_classes = [permissions.IsAuthenticated, ]
     
+    @action(detail=True, methods=['post'])
+    def decline(self, request, pk=None):
+        friend_request = FriendRequest(pk = pk)
+        friend_request.decline()
+        return Response({'status':'The friend request has been deleted'})
+    
+    @action(detail=True, methods=['post'])
+    def cancel(self, request, pk=None):
+        friend_request = FriendRequest(pk = pk)
+        friend_request.cancel()
+        return Response({'status':'The friend request has been canceled'})
         
     @action(detail=True, methods=['post'])
     def accept(self, request, pk=None):

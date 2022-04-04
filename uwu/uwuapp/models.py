@@ -162,8 +162,7 @@ class FriendRequest(models.Model):
         """
         Decline a friend request by setting 'is_on_hold' field to False
         """
-        self.is_on_hold = False
-        self.save()
+        self.delete()
 
     def cancel(self):
         """

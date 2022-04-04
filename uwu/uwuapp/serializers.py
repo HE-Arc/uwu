@@ -39,4 +39,4 @@ class FriendRequestSerializer(serializers.HyperlinkedModelSerializer):
     receiver = UserSerializer(read_only=True)
     class Meta:
         model = FriendRequest
-        fields = '__all__'
+        fields = ['url', 'sender', 'receiver', 'is_on_hold', 'timestamp', 'pk']
