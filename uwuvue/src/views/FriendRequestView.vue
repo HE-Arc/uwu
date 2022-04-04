@@ -5,11 +5,11 @@
     </div>
   <p></p>
   <div v-if="friends.length > 0 || loading" class="row">
-    <div v-for="(friend, index) in friends" :key="index" class="col-6 col-md-3 col-lg-2">
-      <div>
-        <p>{{friend.sender}}</p>
-        <a @click.prevent="acceptFriend" type="button" class="btn btn-success me-3">Accept</a>
-        <a @click.prevent="refuseFriend" type="button" class="btn btn-danger">Cancel</a>
+    <div v-for="(friend, index) in friends" :key="index" class="">
+      <div class="mb-4">
+        <router-link :to="'/users/' + friend.sender.pk"  class="text-primary text-decoration-none ms-3">{{friend.sender.username}}</router-link>
+        <a @click.prevent="acceptFriend" type="button" class="btn btn-success ms-3">Accept</a>
+        <a @click.prevent="refuseFriend" type="button" class="btn btn-danger ms-3">Cancel</a>
       </div>
       
     </div>
