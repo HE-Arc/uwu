@@ -1,4 +1,6 @@
+from asyncore import read
 from django.contrib.auth.models import User
+from django.dispatch import receiver
 from rest_framework import serializers
 from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 
@@ -33,6 +35,8 @@ class UwuUserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'username', 'friends', 'favorites', 'readed', 'image', 'pk']
         
 class FriendRequestSerializer(serializers.HyperlinkedModelSerializer):
+    sender = UserSerializer(read_only=True)
+    receiver = UserSerializer(read_only=True)
     class Meta:
         model = FriendRequest
         fields = '__all__'
