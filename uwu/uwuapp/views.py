@@ -104,7 +104,7 @@ class UserViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
             
         
-        if user in other_user.friends.all():
+        if UwuUser.objects.get(user=user).is_friend(other_user):
             return Response({
                                 'status' : f'{user} and {other_user} are already friend',
                             }, 
