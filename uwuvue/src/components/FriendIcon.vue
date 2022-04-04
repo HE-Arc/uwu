@@ -1,6 +1,8 @@
 <template>
   <div class="position-relative">
-    <a @click.prevent="askFriend" :class="friendClass" href="ask-friend" v-if="$store.getters.isLogged" 
+    <a @click.prevent="askFriend" :class="friendClass" href="ask-friend" v-if="$store.getters.isLogged && !isFriend && !isAsked" 
+      class="position-absolute m-2 top-0 start-0 fs-3" role="img"/>
+     <a :class="friendClass" href="ask-friend" v-if="$store.getters.isLogged && this.isAsked || this.isFriend" 
       class="position-absolute m-2 top-0 start-0 fs-3" role="img"/>
   </div>
 </template>
@@ -53,6 +55,26 @@ export default {
       })
       .then(() => {
         this.isAsked = true;
+      })
+    },
+
+    cancelFriend() {
+      api.post(`/uwuusers/${this.user.pk}/unfriend/`, {}, {
+        headers: this.$store.getters.header
+      })
+      .then(() => {
+        this.isAsked = false;
+        this.isFriend = false;
+      })
+    },
+
+    areFriend() {
+     api.post(`/users/${this.user.pk}/is_friend/`, {}, {
+        headers: this.$store.getters.header
+      })
+      .then(() => {
+        this.isAsked = false;
+        this.isFriend = true;
       })
     }
   }
