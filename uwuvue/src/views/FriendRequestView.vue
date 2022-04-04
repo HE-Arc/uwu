@@ -3,9 +3,15 @@
     <div>
         <h1 class="text-primary">New friends requests</h1>
     </div>
+  <p></p>
   <div v-if="friends.length > 0 || loading" class="row">
     <div v-for="(friend, index) in friends" :key="index" class="col-6 col-md-3 col-lg-2">
-      <user-thumbnail :user="friend"/>
+      <div>
+        <p>{{friend.sender}}</p>
+        <a @click.prevent="acceptFriend" type="button" class="btn btn-success me-3">Accept</a>
+        <a @click.prevent="refuseFriend" type="button" class="btn btn-danger">Cancel</a>
+      </div>
+      
     </div>
   </div>
 
@@ -22,20 +28,19 @@
 <script>
 import api from '@/api'
 
-import UserThumbnail from '../components/UserThumbnail.vue'
+//import UserThumbnail from '../components/UserThumbnail.vue'
 
 export default {
   name : 'FriendRequest',
 
   components: {
-    UserThumbnail
+   // UserThumbnail
   },
 
   data() {
     return {
       friends: [],
       query: this.$route.params.query,
-      order: '',
       loading: false,
       next: null
     }
@@ -49,9 +54,9 @@ export default {
     fetch() {
       this.loading = true
 
-      api.get(`/users/${this.$route.params.id}/get_friend-requests/`, {
+      api.get(`/friend-requests/get_active_friend_request/`, {
         headers: this.$store.getters.header
-      })
+      }) 
       .then(response => {
         this.friends = response.data.results
         this.next = response.data.next
@@ -76,6 +81,17 @@ export default {
       .catch(() => {
         this.loading = false
       })
+    },
+
+    acceptFriend() {
+
+    },
+
+    refuseFriend() {
+      //console.log(this.friends[0])
+      //api.delete(`/friend-requests/${this.friends.id}/`, {
+      //  headers: this.$store.getters.sender.id
+      //}) 
     }
   },
 }
