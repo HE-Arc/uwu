@@ -8,8 +8,10 @@
     <div v-for="(friend, index) in friends" :key="index" class="">
       <div class="mb-4">
         <router-link :to="'/users/' + friend.sender.pk"  class="text-primary text-decoration-none ms-3">{{friend.sender.username}}</router-link>
-        <a @click.prevent="acceptFriend" type="button" class="btn btn-success ms-3">Accept</a>
-        <a @click.prevent="refuseFriend" type="button" class="btn btn-danger ms-3">Cancel</a>
+        <a @click.prevent="acceptFriend(friend.pk)" type="button" class="btn btn-success ms-3">Accept</a>
+        <a @click.prevent="refuseFriend(friend.pk)" type="button" class="btn btn-danger ms-3">Cancel</a> 
+
+
       </div>
       
     </div>
@@ -40,6 +42,7 @@ export default {
   data() {
     return {
       friends: [],
+      users: {},
       query: this.$route.params.query,
       loading: false,
       next: null
@@ -47,6 +50,16 @@ export default {
   },
 
   created() {
+    api.get(`/uwuusers/${this.$route.params.id}/`, {
+      headers: this.$store.getters.header
+    })
+    .then(response => {
+      this.user = response.data
+    })
+    .catch(error => {
+      console.log(error)
+    })
+
     this.fetch()
   },
 
@@ -56,7 +69,7 @@ export default {
 
       api.get(`/friend-requests/get_active_friend_request/`, {
         headers: this.$store.getters.header
-      }) 
+      })
       .then(response => {
         this.friends = response.data.results
         this.next = response.data.next
@@ -83,15 +96,16 @@ export default {
       })
     },
 
-    acceptFriend() {
-
+    acceptFriend(pkfriend) {
+        api.post(`/friend_requests/${pkfriend}/accept/`, {
+        headers: this.$store.getters.id
+      }) 
     },
 
-    refuseFriend() {
-      //console.log(this.friends[0])
-      //api.delete(`/friend-requests/${this.friends.id}/`, {
-      //  headers: this.$store.getters.sender.id
-      //}) 
+    refuseFriend(pkfriend) {
+      api.delete(`/friend-requests/${pkfriend}/`, {
+        headers: this.$store.getters.id
+      }) 
     }
   },
 }
