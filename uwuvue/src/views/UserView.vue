@@ -66,7 +66,7 @@ export default {
   },
 
   created() {
-    api.get(`/uwuusers/${this.$route.params.id}/`, {
+    api.get(`/users/${this.$route.params.id}/`, {
       headers: this.$store.getters.header
     })
     .then(response => {
