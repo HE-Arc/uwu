@@ -581,7 +581,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         
         user = request.user
         
-        friend_requests = FriendRequest.objects.all().filter(receiver=user).order_by('-timestamp')
+        friend_requests = FriendRequest.objects.all().filter(receiver=user).filter(is_on_hold=True).order_by('-timestamp')
 
         page = self.paginate_queryset(friend_requests)
         if page is not None:
