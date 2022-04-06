@@ -94,8 +94,6 @@ class UserViewSet(viewsets.ModelViewSet):
         other_uwu_user = UwuUser.objects.get(user=other_user)
         
         if user_uwu.is_friend(other_user):
-            print("user: " + str(type(user)))
-            print("other_user: " + str(type(other_user)))
             user_uwu.remove_friend(other_user)
             other_uwu_user.remove_friend(user)
             return Response({
