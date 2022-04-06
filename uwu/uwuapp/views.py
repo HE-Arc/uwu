@@ -26,8 +26,8 @@ class UwuUserViewSet(viewsets.ModelViewSet):
     """
     queryset = UwuUser.objects.all().order_by('pk')
     serializer_class = UwuUserSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)           
-    search_fields = ['user__username',] 
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    search_fields = ['user__username',]         
     
 
 
@@ -38,6 +38,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('date_joined')
     serializer_class = UserSerializer
+    search_fields = ['username',]
     permissions_class = [permissions.IsAdminUser,]
     
     def retrieve(self, request, *args, **kwargs):
