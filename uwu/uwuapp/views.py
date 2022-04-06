@@ -25,9 +25,7 @@ class UwuUserViewSet(viewsets.ModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
     queryset = UwuUser.objects.all().order_by('pk')
-    serializer_class = UwuUserSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    search_fields = ['user__username',]         
+    serializer_class = UwuUserSerializer       
     
 
 
@@ -38,6 +36,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('date_joined')
     serializer_class = UserSerializer
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ['username',]
     permissions_class = [permissions.IsAdminUser,]
     
