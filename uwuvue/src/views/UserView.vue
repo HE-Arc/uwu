@@ -108,7 +108,7 @@ export default {
         })
         
         .then(response => {
-            console.log(response)
+            //console.log(response)
             if(response.data.pages_readed){
                 this.pages = response.data.pages_readed
             }           
