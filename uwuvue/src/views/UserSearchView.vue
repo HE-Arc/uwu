@@ -80,7 +80,7 @@ export default {
 
       this.loading = true
 
-      api.get('/uwuusers/', {
+      api.get('/users/', {
         params: {
           search: this.$route.params.query
         },

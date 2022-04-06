@@ -59,7 +59,7 @@ export default {
     },
 
     cancelFriend() {
-      api.post(`/uwuusers/${this.user.pk}/unfriend/`, {}, {
+      api.post(`/users/${this.user.pk}/unfriend/`, {}, {
         headers: this.$store.getters.header
       })
       .then(() => {
