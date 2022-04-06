@@ -1,9 +1,8 @@
 <template>
   <div class="position-relative">
-    <a @click.prevent="askFriend" :class="friendClass" href="ask-friend" v-if="$store.getters.isLogged && !isFriend && !isAsked" 
-      class="position-absolute m-2 top-0 start-0 fs-3" role="img"/>
-     <a :class="friendClass" href="ask-friend" v-if="$store.getters.isLogged && this.isAsked || this.isFriend" 
-      class="position-absolute m-2 top-0 start-0 fs-3" role="img"/>
+    <a @click.prevent="askFriend" :class="friendClass" href="ask-friend" v-if="$store.getters.isLogged" 
+        class="position-absolute m-2 top-0 start-0 fs-3" role="img"/>
+
   </div>
 </template>
 
@@ -28,10 +27,11 @@ export default {
     this.$watch(
       () => this.user,
       () => {
-        this.isFriend = this.user.isFriend
-        this.isAsked = this.user.isAsked
+        this.fetch()
       }
     )
+
+   
   },
 
   computed: {
@@ -49,34 +49,40 @@ export default {
   },
 
   methods: {
+    fetch() {
+     api.get(`/users/${this.user.pk}/is_friend/`, {
+        headers: this.$store.getters.header
+      })
+      .then((response) => {
+        console.log(response.data)
+        this.isAsked = response.data.is_asked;
+        this.isFriend = response.data.is_friend;
+      })
+      
+    },
+
     askFriend() {
-      api.post(`/users/${this.user.pk}/ask_friend/`, {}, {
+      if (!this.isFriend) {
+        api.post(`/users/${this.user.pk}/ask_friend/`, {}, {
         headers: this.$store.getters.header
-      })
-      .then(() => {
-        this.isAsked = true;
-      })
-    },
+        })
+        .then(() => {
+          this.isAsked = true;
+        })
 
-    cancelFriend() {
-      api.post(`/uwuusers/${this.user.pk}/unfriend/`, {}, {
+        return
+      }
+      else {
+        api.post(`/uwuusers/${this.user.pk}/unfriend/`, {}, {
         headers: this.$store.getters.header
-      })
-      .then(() => {
-        this.isAsked = false;
-        this.isFriend = false;
-      })
+        })
+        .then(() => {
+          this.isAsked = false;
+          this.isFriend = false;
+        })
+      }    
     },
-
-    areFriend() {
-     api.post(`/users/${this.user.pk}/is_friend/`, {}, {
-        headers: this.$store.getters.header
-      })
-      .then(() => {
-        this.isAsked = false;
-        this.isFriend = true;
-      })
-    }
+    
   }
 }
 </script>

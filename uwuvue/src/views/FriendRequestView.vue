@@ -71,6 +71,8 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
+        console.log(response)
+
         this.friends = response.data.results
         this.next = response.data.next
         this.loading = false
@@ -97,15 +99,29 @@ export default {
     },
 
     acceptFriend(pkfriend) {
-        api.post(`/friend_requests/${pkfriend}/accept/`, {
-        headers: this.$store.getters.id
-      }) 
+        api.post(`/friend-requests/${pkfriend}/accept/`, {}, { 
+        headers: this.$store.getters.header
+      })
+     .then(() => {
+      this.fetch()
+      })
+     .catch(() => {
+       console.log("can't accept invitation")
+     })
+      console.log(this.$store.getters.header)
     },
 
     refuseFriend(pkfriend) {
-      api.delete(`/friend-requests/${pkfriend}/`, {
-        headers: this.$store.getters.id
+      api.post(`/friend-requests/${pkfriend}/decline/`, {}, {
+        headers: this.$store.getters.header
       }) 
+      .then(() => {
+      this.fetch()
+      })
+     .catch(() => {
+       console.log("can't cancel invitation")
+     })
+      console.log(this.$store.getters.header)
     }
   },
 }
