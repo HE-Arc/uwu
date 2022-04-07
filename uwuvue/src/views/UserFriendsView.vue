@@ -12,7 +12,7 @@
   </div>
 
   <div v-else class="row">
-    <div class="alert alert-primary col-lg-6" role="alert">No friend</div>
+    <div class="alert alert-primary col-lg-6" role="alert">No friend :'(</div>
   </div>
 
   <div v-if="next" class="position-relative">
