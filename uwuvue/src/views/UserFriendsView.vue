@@ -1,8 +1,10 @@
 <template>
- 
-    <div>
-        <h1>All friends</h1>
-    </div>
+  <user-title :user="user" :fromProfile="true"/>
+
+  <div>
+      <h1>All my friends</h1>
+  </div>
+
   <div v-if="friends.length > 0 || loading" class="row">
     <div v-for="(friend, index) in friends" :key="index" class="col-6 col-md-3 col-lg-2">
       <user-thumbnail :user="friend"/>
@@ -24,12 +26,14 @@
 import api from '@/api'
 
 import UserThumbnail from '../components/UserThumbnail.vue'
+import UserTitle from '../components/UserTitle.vue'
 
 export default {
   name : 'UserFriendsView',
 
   components: {
-    UserThumbnail
+    UserThumbnail,
+    UserTitle
   },
 
   data() {
@@ -38,19 +42,29 @@ export default {
       query: this.$route.params.query,
       order: '',
       loading: false,
-      next: null
+      next: null,
+      user: null
     }
   },
 
   created() {
-    this.fetch()
+    api.get('/users/my_user/', {
+      headers: this.$store.getters.header
+    })
+    .then(response => {
+      this.user = response.data
+      this.fetch()
+    })
+    .catch(() => {
+      this.$router.push('/404')
+    })
   },
 
   methods: {
     fetch() {
       this.loading = true
 
-      api.get(`/users/${this.$route.params.id}/get_friends/`, {
+      api.get(`/users/${this.user.pk}/get_friends/`, {
         headers: this.$store.getters.header
       })
       .then(response => {

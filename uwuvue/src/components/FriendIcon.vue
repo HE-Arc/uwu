@@ -30,8 +30,6 @@ export default {
         this.fetch()
       }
     )
-
-   
   },
 
   computed: {
@@ -50,7 +48,7 @@ export default {
 
   methods: {
     fetch() {
-     api.get(`/users/${this.user.pk}/is_friend/`, {
+      api.get(`/users/${this.user.pk}/is_friend/`, {
         headers: this.$store.getters.header
       })
       .then((response) => {
@@ -58,13 +56,12 @@ export default {
         this.isAsked = response.data.is_asked;
         this.isFriend = response.data.is_friend;
       })
-      
     },
 
     askFriend() {
       if (!this.isFriend) {
         api.post(`/users/${this.user.pk}/ask_friend/`, {}, {
-        headers: this.$store.getters.header
+          headers: this.$store.getters.header
         })
         .then(() => {
           this.isAsked = true;
@@ -74,7 +71,7 @@ export default {
       }
       else {
         api.post(`/users/${this.user.pk}/unfriend/`, {}, {
-        headers: this.$store.getters.header
+          headers: this.$store.getters.header
         })
         .then(() => {
           this.isAsked = false;
@@ -82,7 +79,6 @@ export default {
         })
       }    
     },
-    
   }
 }
 </script>

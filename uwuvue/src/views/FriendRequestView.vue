@@ -1,43 +1,38 @@
 <template>
- 
-    <div>
-        <h1 class="text-primary">New friends requests</h1>
-    </div>
-  <p></p>
+  <div>
+    <h1 class="text-primary">New friends requests</h1>
+  </div>
+
   <div v-if="friends.length > 0 || loading" class="row">
-    <div v-for="(friend, index) in friends" :key="index" class="">
-      <div class="mb-4">
-        <router-link :to="'/users/' + friend.sender.pk"  class="text-primary text-decoration-none ms-3">{{friend.sender.username}}</router-link>
-        <a @click.prevent="acceptFriend(friend.pk)" type="button" class="btn btn-success ms-3">Accept</a>
-        <a @click.prevent="refuseFriend(friend.pk)" type="button" class="btn btn-danger ms-3">Cancel</a> 
-
-
+    <div v-for="(friend, index) in friends" :key="index">
+      <div class="mb-4 card bg-dark">
+        <div class="card-body d-flex">
+          <h5 class="card-title">
+            <router-link :to="'/users/' + friend.sender.pk"  class="link-primary text-decoration-none">{{friend.sender.username}}</router-link>
+          </h5>
+          <button @click.prevent="acceptFriend(friend.pk)" class="btn btn-primary ms-auto">accept</button> 
+          <button @click.prevent="refuseFriend(friend.pk)" class="btn btn-info ms-3">cancel</button> 
+        </div>
       </div>
-      
     </div>
   </div>
 
   <div v-else class="row">
     <div class="alert alert-primary col-lg-6" role="alert">No new requests :(</div>
   </div>
+
   <div v-if="next" class="position-relative">
-      <button @click="moreResult" class="btn btn-primary mt-4 position-absolute top-0 start-50 translate-middle">
-          more results
-      </button>
+    <button @click="moreResult" class="btn btn-primary mt-4 position-absolute top-0 start-50 translate-middle">
+    more results
+    </button>
   </div>
 </template>
 
 <script>
 import api from '@/api'
 
-//import UserThumbnail from '../components/UserThumbnail.vue'
-
 export default {
   name : 'FriendRequest',
-
-  components: {
-   // UserThumbnail
-  },
 
   data() {
     return {
@@ -50,7 +45,7 @@ export default {
   },
 
   created() {
-    api.get(`/users/${this.$route.params.id}/`, {
+    api.get('/users/my_user/', {
       headers: this.$store.getters.header
     })
     .then(response => {
@@ -67,7 +62,7 @@ export default {
     fetch() {
       this.loading = true
 
-      api.get(`/friend-requests/get_active_friend_request/`, {
+      api.get('/friend-requests/get_active_friend_request/', {
         headers: this.$store.getters.header
       })
       .then(response => {
@@ -99,16 +94,15 @@ export default {
     },
 
     acceptFriend(pkfriend) {
-        api.post(`/friend-requests/${pkfriend}/accept/`, {}, { 
+      api.post(`/friend-requests/${pkfriend}/accept/`, {}, { 
         headers: this.$store.getters.header
       })
-     .then(() => {
-      this.fetch()
+      .then(() => {
+        this.fetch()
       })
-     .catch(() => {
+      .catch(() => {
        console.log("can't accept invitation")
-     })
-      console.log(this.$store.getters.header)
+      })
     },
 
     refuseFriend(pkfriend) {
@@ -116,12 +110,11 @@ export default {
         headers: this.$store.getters.header
       }) 
       .then(() => {
-      this.fetch()
+        this.fetch()
       })
-     .catch(() => {
-       console.log("can't cancel invitation")
-     })
-      console.log(this.$store.getters.header)
+      .catch(() => {
+        console.log("can't cancel invitation")
+      })
     }
   },
 }

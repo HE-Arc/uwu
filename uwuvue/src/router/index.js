@@ -40,7 +40,7 @@ const routes = [
   {
     path: '/profile',
     name: 'profile',
-    component: () => import('../views/ProfileView.vue'),
+    component: () => import('../views/UserView.vue'),
     meta: { title: 'User profile' }
   },
   {
@@ -52,23 +52,35 @@ const routes = [
   {
     path: '/users/:id/favorites',
     name: 'users-favorites',
-    component: () => import('../views/UserFavorites.vue'),
+    component: () => import('../views/UserFavoritesView.vue'),
     meta: { title: 'Favorites' }
   },
   {
     path: '/users/:id/readed',
     name: 'users-readed',
-    component: () => import('../views/UserReaded.vue'),
+    component: () => import('../views/UserReadedView.vue'),
     meta: { title: 'Readed' }
   },
   {
-    path: '/users/:id/friends',
+    path: '/profile/favorites',
+    name: 'profile-favorites',
+    component: () => import('../views/UserFavoritesView.vue'),
+    meta: { title: 'Favorites' }
+  },
+  {
+    path: '/profile/readed',
+    name: 'profile-readed',
+    component: () => import('../views/UserReadedView.vue'),
+    meta: { title: 'Readed' }
+  },
+  {
+    path: '/profile/friends',
     name: 'users-friends',
     component: () => import('../views/UserFriendsView.vue'),
     meta: { title: 'Friends' }
   },
   {
-    path: '/users/:id/requests',
+    path: '/profile/requests',
     name: 'users-requests',
     component: () => import('../views/FriendRequestView.vue'),
     meta: { title: 'Requests' }

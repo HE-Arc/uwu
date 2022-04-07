@@ -55,7 +55,7 @@ export default {
 
     logOut() {
       this.$store.dispatch('logout')
-      this.collapse.hide()
+      this.$router.push('/')
     },
 
     searchPressed() {

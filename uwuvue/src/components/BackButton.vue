@@ -1,5 +1,5 @@
 <template>
-  <button v-if="visible" @click="goBack" class="m-3 btn btn-primary position-fixed">
+  <button v-if="visible" @click="goBack" class="m-4 btn btn-primary position-fixed">
     <i class="bi bi-arrow-left"/>
   </button>
 </template>
@@ -18,7 +18,6 @@ export default {
     this.$watch(
       () => this.$route.path,
       () => {
-        console.log(this.$route.path)
         this.visible = this.$route.path != '/'
       }
     )

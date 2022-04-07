@@ -1,57 +1,65 @@
 <template>
-  <div class="row">
-    <div class="col-4 col-md-2">
-      <friend-icon :user="user"/>
-      <img :src="user.image" class="img-fluid rounded mb-4"/>
-    </div>
+  <user-title :user="user" :fromProfile="fromProfile"/>
 
-    <div class="col mb-4">
-      <h1 class="text-primary">{{user.username}}</h1>
-       <p v-if="this.pages > 0" class="text-secondary">Pages readed : {{this.pages}}</p>
-       <p v-else class="text-secondary">Never read mangas</p>
-    </div>
-  </div>
-
-   <h2>Mangas readed</h2>
+  <h2>Mangas readed</h2>
 
   <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4"  v-if="readed.length > 0">
-    <div v-for="(manga, index) in readed.slice(0,6)" :key="index" class="col">
+    <div v-for="(manga, index) in readed.slice(0, 6)" :key="index" class="col">
       <manga-thumbnail :manga="manga" :simple="true"/>
-    </div> 
-  </div>
-    <router-link v-if="readed.length > 0" :to="'/users/' + user.pk + '/readed'" class="btn btn-primary">more...</router-link> 
-     
-     <div v-else class="row">
-      <div class="alert alert-primary col-lg-6" role="alert">No manga readed</div>
     </div>
-   
+  </div>
+      
+  <router-link v-if="readed.length > 0" :to="$route.path + '/readed'" type="button" class="btn btn-primary">more</router-link>
+
+  <div v-else class="row">
+    <div class="alert alert-primary col-lg-6" role="alert">No manga readed</div>
+  </div>
 
   <h2 class="mt-5">Favorites mangas</h2>
 
-  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4" v-if="favorites.length > 0">
-    <div v-for="(manga, index) in favorites.slice(0,6)" :key="index" class="col">
+  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4"  v-if="favorites.length > 0">
+    <div v-for="(manga, index) in favorites.slice(0, 6)" :key="index" class="col">
       <manga-thumbnail :manga="manga" :simple="true"/>
     </div>
-  </div>  
-    <router-link v-if="favorites.length > 0" :to="'/users/' + user.pk + '/favorites'" type="button" class="btn btn-primary">more...</router-link>
-    <div v-else class="row">
-      <div class="alert alert-primary col-lg-6" role="alert">No favorites manga</div>
+  </div>
+
+  <router-link v-if="favorites.length > 0" :to="$route.path + '/favorites'" type="button" class="btn btn-primary">more</router-link>
+  
+  <div v-else class="row">
+    <div class="alert alert-primary col-lg-6" role="alert">No favorites manga</div>
+  </div>
+
+  <div v-if="fromProfile">
+    <h2 class="mt-5">My Friends</h2>
+
+    <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4" v-if="friends.length > 0">
+      <div v-for="(friends, index) in friends.slice(0, 6)" :key="index" class="col">
+        <user-thumbnail :user="friends"/>
+      </div>
     </div>
+
+    <router-link v-if="friends.length > 0" :to="$route.path + '/friends' " type="button" class="btn btn-primary">more</router-link>
+  
+    <div v-else class="row">
+      <div class="alert alert-primary col-lg-6" role="alert">No friends :'(</div>
+    </div>
+  </div>
 </template>
 
 <script>
 import api from '@/api'
 
+import UserTitle from '@/components/UserTitle.vue'
 import MangaThumbnail from '@/components/MangaThumbnail.vue'
-import FriendIcon from '@/components/FriendIcon.vue'
-
+import UserThumbnail from '@/components/UserThumbnail.vue'
 
 export default {
   name : 'UserView',
 
   components: {
     MangaThumbnail,
-    FriendIcon
+    UserThumbnail,
+    UserTitle
   },
 
   data() {
@@ -59,63 +67,99 @@ export default {
       user: {},
       favorites:[],
       readed:[],
-      readedNext: null,
-      favoriteNext: null,
-      pages: null,
+      friends:[],
+      pages : null,
+      fromProfile: this.$route.name == 'profile'
     }
   },
 
   created() {
-    api.get(`/users/${this.$route.params.id}/`, {
-      headers: this.$store.getters.header
-    })
-    .then(response => {
-      this.user = response.data
-    })
-    .catch(error => {
-      console.log(error)
-    })
-
-    api.get(`/users/${this.$route.params.id}/get_favorites/`, {
-        headers: this.$store.getters.header
-    })
-    .then(response => {
-        if(response.data.results) {
-        this.favorites = response.data.results
-        this.favoriteNext = response.data.next
-      }
-    })
-    .catch(error => {
-        console.log(error)
-    })
-
-    
-     api.get(`/users/${this.$route.params.id}/get_readed_mangas/`, {
-        headers: this.$store.getters.header
-        })
-        .then(response => {
-          if(response.data.results) {
-            this.readed = response.data.results
-            this.readedNext = response.data.next
+    this.$watch(
+      () => this.$route.name,
+      () => {
+        if (this.$route.name == 'users' || this.$route.name == 'profile')
+        {
+          this.fromProfile = this.$route.name == 'profile'
+          this.fetchUser()
         }
-        })
-        .catch(error => {
-          console.log(error)
-        })
+      }
+    )
 
-    api.get(`users/${this.$route.params.id}/total_pages_readed/`, {
-        headers: this.$store.getters.header
+    this.fetchUser()
+  },
+
+  methods: {
+    fetchUser() {
+      if (this.fromProfile) {
+        api.get('/users/my_user/', {
+          headers: this.$store.getters.header
         })
-        
         .then(response => {
-            //console.log(response)
-            if(response.data.pages_readed){
-                this.pages = response.data.pages_readed
-            }           
+          this.user = response.data
+          this.fetch()
         })
-        .catch(error => {
-            console.log(error)
+        .catch(() => {
+          this.$router.push('/404')
         })
+      }
+      else {
+        api.get(`/users/${this.$route.params.id}/`, {
+          headers: this.$store.getters.header
+        })
+        .then(response => {
+          this.user = response.data
+          this.fetch()
+        })
+        .catch(() => {
+          this.$router.push('/404')
+        })
+      }
+    },
+
+    fetch() {
+      api.get(`users/${this.user.pk}/get_favorites/`, {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        this.favorites = []
+
+        if (response.data.results) {
+          this.favorites = response.data.results
+        }
+      })
+      .catch(error => {
+          console.log(error)
+      })
+
+      api.get(`users/${this.user.pk}/get_readed_mangas/`, {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        this.readed = []
+
+        if (response.data.results) {
+          this.readed = response.data.results
+        }
+      })
+      .catch(error => {
+        console.log(error)
+      })
+
+      api.get(`users/${this.user.pk}/get_friends/`, {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        this.friends = []
+
+        if (response.data.results){
+          this.friends = response.data.results
+          this.friendNext = response.data.next
+        }           
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    }
   }
 }
 </script>
