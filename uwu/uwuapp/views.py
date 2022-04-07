@@ -2,10 +2,11 @@ import django
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, permissions, filters, status, pagination
+from requests import request
+from rest_framework import viewsets, filters, status, pagination
+from rest_framework.permissions import IsAdminUser, SAFE_METHODS, IsAuthenticated 
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from uwu.settings import BASE_DIR
 from uwu.uwuapp.serializers import ChapterSerializer, FriendRequestSerializer, UwuUserSerializer, MangaSerializer, UserSerializer
 from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 from rest_framework.authtoken.models import Token
@@ -13,8 +14,22 @@ from django.db.models import Q
 from django.contrib.auth.models import AnonymousUser
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+from .permissions import *
 
 
+class IsAdminUserOrReadOnly(IsAdminUser):
+
+    def has_permission(self, request, view):
+        is_admin = super().has_permission(request, view)
+        return request.method in SAFE_METHODS or is_admin
+    
+def is_auth(request):
+    if not request.user.is_authenticated:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+def is_admin():
+    if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 title_param = openapi.Parameter('Title', openapi.IN_QUERY, description="chapter's title", type=openapi.TYPE_STRING, required=True)
 page_nb = openapi.Parameter('Page nb', openapi.IN_QUERY, description="chapter's page number", type=openapi.TYPE_NUMBER, required=True)
@@ -26,9 +41,7 @@ class UwuUserViewSet(viewsets.ModelViewSet):
     """
     queryset = UwuUser.objects.all().order_by('pk')
     serializer_class = UwuUserSerializer       
-    
-
-
+    permission_classes = [IsAdminUser,]
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -38,7 +51,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ['username',]
-    permissions_class = [permissions.IsAdminUser,]
+    permission_classes = [IsAdminUserOrReadOnly,]
     
     def retrieve(self, request, *args, **kwargs):
         super_retrieve = super().retrieve(request, *args, **kwargs)
@@ -49,9 +62,15 @@ class UserViewSet(viewsets.ModelViewSet):
     
     def list(self, request):
         super_list = super().list(request)
+        current_user = request.user
+        
         for user in super_list.data['results']:
-            uwu_user = UwuUser.objects.get(user = user['url'].obj)
-            user['image'] = request.build_absolute_uri(uwu_user.image.url)
+            if user['pk'] != current_user.pk:
+                uwu_user = UwuUser.objects.get(user = user['url'].obj)
+                user['image'] = request.build_absolute_uri(uwu_user.image.url)
+            else:
+                super_list.data['results'].remove(user)           
+            
         return super_list
 
     
@@ -317,17 +336,21 @@ class MangaViewSet(viewsets.ModelViewSet):
     """
     queryset = Manga.objects.all().order_by('-updated')
     serializer_class = MangaSerializer
+    permission_classes = [IsAuthenticated,]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ['is_finished']
     search_fields = ['name', 'author']
     ordering_fields = ['name', 'author', 'date']
     
-    @swagger_auto_schema(manual_parameters=[title_param, page_nb, order_nb], request_body=None)
+    @swagger_auto_schema(manual_parameters=[title_param, page_nb, order_nb], request_body=None, responses={200:openapi.Response('response description', ChapterSerializer)})
     @action(detail=True, methods=['post'])
     def add_chapter(self, request, pk=None):
         """
         It adds a chapter to a manga.
         """
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        
         context = {'request':request}
         manga = Manga.objects.get(pk=pk)
         
@@ -462,6 +485,7 @@ class ChapterViewSet(viewsets.ModelViewSet):
     """
     queryset = Chapter.objects.all().order_by('order')
     serializer_class = ChapterSerializer
+    permission_classes = [ChapterPermission,]
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -508,7 +532,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
     """
     queryset = FriendRequest.objects.all().order_by('-timestamp')
     serializer_class = FriendRequestSerializer
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, ]
     
     @action(detail=True, methods=['post'])
     def decline(self, request, pk=None):
