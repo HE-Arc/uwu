@@ -1,44 +1,44 @@
 <template>
   <user-title :user="user" :fromProfile="fromProfile"/>
 
+  <router-link :to="$route.path + '/readed'" type="button" class="text-decoration-none">
   <h2>Mangas readed</h2>
+  </router-link>
 
   <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4"  v-if="readed.length > 0">
     <div v-for="(manga, index) in readed.slice(0, 6)" :key="index" class="col">
       <manga-thumbnail :manga="manga" :simple="true"/>
     </div>
   </div>
-      
-  <router-link v-if="readed.length > 0" :to="$route.path + '/readed'" type="button" class="btn btn-primary">more</router-link>
 
   <div v-else class="row">
     <div class="alert alert-primary col-lg-6" role="alert">No manga readed</div>
   </div>
 
-  <h2 class="mt-5">Favorites mangas</h2>
+  <router-link :to="$route.path + '/favorites'" type="button" class="text-decoration-none">
+    <h2 class="mt-3">Favorites mangas</h2>
+  </router-link>
 
   <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4"  v-if="favorites.length > 0">
     <div v-for="(manga, index) in favorites.slice(0, 6)" :key="index" class="col">
       <manga-thumbnail :manga="manga" :simple="true"/>
     </div>
   </div>
-
-  <router-link v-if="favorites.length > 0" :to="$route.path + '/favorites'" type="button" class="btn btn-primary">more</router-link>
   
   <div v-else class="row">
     <div class="alert alert-primary col-lg-6" role="alert">No favorites manga</div>
   </div>
 
   <div v-if="fromProfile">
-    <h2 class="mt-5">My Friends</h2>
+    <router-link :to="$route.path + '/friends'" class="text-decoration-none">
+      <h2 class="mt-3">My Friends</h2>
+    </router-link>
 
     <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4" v-if="friends.length > 0">
       <div v-for="(friends, index) in friends.slice(0, 6)" :key="index" class="col">
         <user-thumbnail :user="friends"/>
       </div>
     </div>
-
-    <router-link v-if="friends.length > 0" :to="$route.path + '/friends' " type="button" class="btn btn-primary">more</router-link>
   
     <div v-else class="row">
       <div class="alert alert-primary col-lg-6" role="alert">No friends :'(</div>

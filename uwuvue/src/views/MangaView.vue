@@ -104,7 +104,6 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        console.log(response.data)
         this.isAdmin = response.data.is_admin
       })
       .catch(error => {

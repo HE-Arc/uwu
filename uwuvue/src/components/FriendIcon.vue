@@ -52,7 +52,6 @@ export default {
         headers: this.$store.getters.header
       })
       .then((response) => {
-        console.log(response.data)
         this.isAsked = response.data.is_asked;
         this.isFriend = response.data.is_friend;
       })

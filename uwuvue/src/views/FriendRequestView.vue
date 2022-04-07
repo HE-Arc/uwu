@@ -66,8 +66,6 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        console.log(response)
-
         this.friends = response.data.results
         this.next = response.data.next
         this.loading = false
@@ -100,8 +98,8 @@ export default {
       .then(() => {
         this.fetch()
       })
-      .catch(() => {
-       console.log("can't accept invitation")
+      .catch(error => {
+       console.log(error)
       })
     },
 
@@ -112,8 +110,8 @@ export default {
       .then(() => {
         this.fetch()
       })
-      .catch(() => {
-        console.log("can't cancel invitation")
+      .catch(error => {
+        console.log(error)
       })
     }
   },

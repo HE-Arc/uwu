@@ -5,22 +5,22 @@
       <div v-if="error" class="alert alert-info mb-2">{{error}}</div>
 
       <div class="form-group mb-2">
-        <label for="userInput">Username</label>
+        <label for="userInput">Username *</label>
         <input v-model="username" type="text" required class="form-control" id="userInput" placeholder="username">
       </div>
 
       <div class="form-group mb-2">
-        <label for="passwordInput">Password</label>
+        <label for="passwordInput">Password *</label>
         <input v-model="password" type="password" required class="form-control" id="passwordInput" placeholder="password">
       </div>
 
       <div class="form-group mb-2">
-        <label for="repeatInput">Repeat password</label>
+        <label for="repeatInput">Repeat password *</label>
         <input v-model="repeatPassword" type="password" required class="form-control" id="repeatInput" placeholder="password">
       </div>
 
       <div class="form-group mb-3">
-        <label for="pictureInput">Manga picture</label>
+        <label for="pictureInput">User picture</label>
         <input type="file" class="form-control" accept=".jpg, .jpeg, .png" @change="pictureChanged" id="pictureInput"/>
       </div>
 
