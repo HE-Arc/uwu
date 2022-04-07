@@ -17,20 +17,6 @@ from drf_yasg import openapi
 from .permissions import *
 
 
-class IsAdminUserOrReadOnly(IsAdminUser):
-
-    def has_permission(self, request, view):
-        is_admin = super().has_permission(request, view)
-        return request.method in SAFE_METHODS or is_admin
-    
-def is_auth(request):
-    if not request.user.is_authenticated:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-def is_admin():
-    if not request.user.is_staff:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
 title_param = openapi.Parameter('Title', openapi.IN_QUERY, description="chapter's title", type=openapi.TYPE_STRING, required=True)
 page_nb = openapi.Parameter('Page nb', openapi.IN_QUERY, description="chapter's page number", type=openapi.TYPE_NUMBER, required=True)
 order_nb = openapi.Parameter('Order', openapi.IN_QUERY, description="chapter's order", type=openapi.TYPE_NUMBER)
@@ -51,24 +37,14 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ['username',]
-    permission_classes = [IsAdminUserOrReadOnly,]
-    
-    def retrieve(self, request, *args, **kwargs):
-        super_retrieve = super().retrieve(request, *args, **kwargs)
-        user = super_retrieve.data['url'].obj
-        uwu_user = UwuUser.objects.get(user = user)
-        super_retrieve.data['image'] = request.build_absolute_uri(uwu_user.image.url)
-        return super_retrieve
+    permission_classes = [UserPermission,]
     
     def list(self, request):
         super_list = super().list(request)
         current_user = request.user
         
         for user in super_list.data['results']:
-            if user['pk'] != current_user.pk:
-                uwu_user = UwuUser.objects.get(user = user['url'].obj)
-                user['image'] = request.build_absolute_uri(uwu_user.image.url)
-            else:
+            if user['pk'] == current_user.pk:
                 super_list.data['results'].remove(user)           
             
         return super_list
@@ -187,10 +163,6 @@ class UserViewSet(viewsets.ModelViewSet):
         results = paginator.paginate_queryset(results, request)
 
         serializer = UserSerializer(results, many=True, context=context)
-        if len(serializer.data) > 0:
-            for f in serializer.data:
-                
-                f['image'] = request.build_absolute_uri(UwuUser.objects.get(user=f['url'].obj).image.url)
         
         response = paginator.get_paginated_response(serializer.data)
 
@@ -224,13 +196,11 @@ class UserViewSet(viewsets.ModelViewSet):
         uwu_user = UwuUser.objects.get(user=user)
         results = uwu_user.favorites.all().order_by('-date')
 
-        results = paginator.paginate_queryset(results, request)
-        serializer = MangaSerializer(data=results, many=True, context=context)
-        if serializer.is_valid():
-            pass
+        serializer = MangaSerializer(results, many=True, context=context)
+        results = paginator.paginate_queryset(results, request)        
         response = paginator.get_paginated_response(serializer.data)
-
-        return response
+        
+        return Response(response.data, status=status.HTTP_200_OK)
     
     @action(detail=True)        
     def get_readed_mangas(self, request, pk=None):
@@ -295,7 +265,7 @@ class UserViewSet(viewsets.ModelViewSet):
         
         user = request.user
         
-        serializer = UwuUserSerializer(UwuUser.objects.get(user=user), context=context)
+        serializer = UserSerializer(user, context=context)
         
         return Response(serializer.data)
     
@@ -336,7 +306,7 @@ class MangaViewSet(viewsets.ModelViewSet):
     """
     queryset = Manga.objects.all().order_by('-updated')
     serializer_class = MangaSerializer
-    permission_classes = [IsAuthenticated,]
+    permission_classes = [MangaPermission,]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ['is_finished']
     search_fields = ['name', 'author']
@@ -595,12 +565,16 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         queryset = self.queryset.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
         serializer = FriendRequestSerializer(queryset, many=True, context=context)
         
-        return Response(serializer.data)
+        if serializer.is_valid():
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=False)
     def get_active_friend_request(self, request):
         """
-        Get every friends requests that ar adressed to you.
+        Get every friends requests that are adressed to you.
         """
         
         user = request.user

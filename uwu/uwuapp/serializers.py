@@ -3,9 +3,13 @@ from rest_framework import serializers
 from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    image = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['url', 'username', 'pk']
+        fields = ['url', 'username', 'pk', 'image']
+        
+    def get_image(self, obj):
+        return self.context['request'].build_absolute_uri(UwuUser.objects.get(user=obj).image.url)
         
               
 
