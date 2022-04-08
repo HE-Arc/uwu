@@ -43,7 +43,7 @@ export default {
       order: '',
       loading: false,
       next: null,
-      user: null
+      user: {}
     }
   },
 
@@ -68,8 +68,11 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        this.friends = response.data.results
-        this.next = response.data.next
+        if (response.data.results) {
+          this.friends = response.data.results
+          this.next = response.data.next
+        }
+
         this.loading = false
       })
       .catch(() => {

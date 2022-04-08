@@ -106,8 +106,6 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        this.favorites = []
-
         if (response.data.results) {
           this.favorites = response.data.results
         }
@@ -120,8 +118,6 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        this.readed = []
-
         if (response.data.results) {
           this.readed = response.data.results
         }
@@ -134,8 +130,6 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        this.friends = []
-
         if (response.data.results){
           this.friends = response.data.results
           this.friendNext = response.data.next

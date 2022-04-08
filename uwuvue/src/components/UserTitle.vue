@@ -7,7 +7,7 @@
 
     <div class="col mb-4">
       <h1 class="text-primary">{{user.username}}</h1>
-      <h4>Pages readed: {{this.pages}}</h4>
+      <h4>Pages readed: {{pages}}</h4>
       <router-link v-if="fromProfile" :to="$route.path + '/requests'" class="btn btn-primary">friend requests</router-link>
     </div>
   </div>
@@ -43,8 +43,6 @@ export default {
         this.fetch()
       }
     )
-
-    this.fetch()
   },
 
   methods: {

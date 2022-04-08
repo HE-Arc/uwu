@@ -62,6 +62,10 @@ export default {
     },
 
     askFriend() {
+      if (this.isAsked) {
+        return;
+      }
+
       if (!this.isFriend) {
         api.post(`/users/${this.user.pk}/ask_friend/`, {}, {
           headers: this.$store.getters.header
