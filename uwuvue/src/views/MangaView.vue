@@ -66,13 +66,6 @@ export default {
   created() {
     this.fetch()
     this.checkAdmin()
-
-    this.$watch(
-      () => this.$store.getters.isLogged,
-      () => {
-        this.checkAdmin()
-      }
-    )
   },
 
   methods: {

@@ -74,48 +74,33 @@ export default {
   },
 
   created() {
-    this.$watch(
-      () => this.$route.name,
-      () => {
-        if (this.$route.name == 'users' || this.$route.name == 'profile')
-        {
-          this.fromProfile = this.$route.name == 'profile'
-          this.fetchUser()
-        }
-      }
-    )
-
-    this.fetchUser()
+    if (this.fromProfile) {
+      api.get('/users/my_user/', {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        this.user = response.data
+        this.fetch()
+      })
+      .catch(() => {
+        this.$router.push('/404')
+      })
+    }
+    else {
+      api.get(`/users/${this.$route.params.id}/`, {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        this.user = response.data
+        this.fetch()
+      })
+      .catch(() => {
+        this.$router.push('/404')
+      })
+    }
   },
 
   methods: {
-    fetchUser() {
-      if (this.fromProfile) {
-        api.get('/users/my_user/', {
-          headers: this.$store.getters.header
-        })
-        .then(response => {
-          this.user = response.data
-          this.fetch()
-        })
-        .catch(() => {
-          this.$router.push('/404')
-        })
-      }
-      else {
-        api.get(`/users/${this.$route.params.id}/`, {
-          headers: this.$store.getters.header
-        })
-        .then(response => {
-          this.user = response.data
-          this.fetch()
-        })
-        .catch(() => {
-          this.$router.push('/404')
-        })
-      }
-    },
-
     fetch() {
       api.get(`users/${this.user.pk}/get_favorites/`, {
         headers: this.$store.getters.header

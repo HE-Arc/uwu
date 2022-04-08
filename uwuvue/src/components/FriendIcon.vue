@@ -1,8 +1,7 @@
 <template>
-  <div class="position-relative">
+  <div class="position-relative" @mouseover="isMouseOver = true" @mouseleave="isMouseOver = false">
     <a @click.prevent="askFriend" :class="friendClass" href="ask-friend" v-if="$store.getters.isLogged" 
         class="position-absolute m-2 top-0 start-0 fs-3" role="img"/>
-
   </div>
 </template>
 
@@ -19,7 +18,8 @@ export default {
   data() {
     return {
       isAsked: this.user.isAsked,
-      isFriend : this.user.isFriend
+      isFriend: this.user.isFriend,
+      isMouseOver: false
     }
   },
 
@@ -35,6 +35,10 @@ export default {
   computed: {
     friendClass: function() {
       if (this.isFriend) {
+        if (this.isMouseOver) {
+          return "bi bi-person-x-fill"
+        }
+
         return "bi bi-person-hearts"
       }
 

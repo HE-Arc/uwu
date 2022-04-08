@@ -54,11 +54,15 @@ export default {
     },
 
     logOut() {
+      this.hideNavBar()
+
       this.$store.dispatch('logout')
       this.$router.push('/')
     },
 
     searchPressed() {
+      this.hideNavBar()
+
       this.$router.push({
         name: 'search',
         params: {
