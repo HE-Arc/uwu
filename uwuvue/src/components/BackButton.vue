@@ -10,15 +10,15 @@ export default {
 
   data() {
     return {
-      visible: this.$route.path != '/'
+      visible: this.$route.name != 'home'
     }
   },
 
   created() {
     this.$watch(
-      () => this.$route.path,
+      () => this.$route.name,
       () => {
-        this.visible = this.$route.path != '/'
+        this.visible = this.$route.name != 'home'
       }
     )
   },
