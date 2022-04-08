@@ -1,5 +1,17 @@
 <template>
-  <user-title :user="user" :fromProfile="fromProfile"/>
+  <div class="row">
+    <div class="col-12 col-md-8 col-lg-9">
+      <user-title :user="user" :fromProfile="fromProfile"/>
+    </div>
+
+    <div class="col">
+      <div class="row">
+      <router-link v-if="fromProfile && requestCount > 0" :to="$route.path + '/requests'" class="btn btn-primary mb-3">
+        friend requests <span class="badge bg-dark">{{requestCount}}</span>
+      </router-link>
+      </div>
+    </div>
+  </div>
 
   <router-link :to="$route.path + '/readed'" type="button" class="text-decoration-none">
   <h2>Mangas readed</h2>
@@ -68,7 +80,7 @@ export default {
       favorites:[],
       readed:[],
       friends:[],
-      pages : null,
+      requestCount: 0,
       fromProfile: this.$route.name == 'profile'
     }
   },
@@ -137,6 +149,24 @@ export default {
       })
       .catch(error => {
         console.log(error)
+      })
+
+      if (!this.fromProfile) {
+        return;
+      }
+
+      api.get('/friend-requests/get_active_friend_request/', {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        if (response.data.results) {
+          this.requestCount = response.data.results.length
+        }
+
+        this.loading = false
+      })
+      .catch(() => {
+        this.loading = false
       })
     }
   }
