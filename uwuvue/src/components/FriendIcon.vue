@@ -43,6 +43,10 @@ export default {
       }
 
       if (this.isAsked) {
+        if (this.isMouseOver) {
+          return "bi bi-person-x-fill"
+        }
+
         return "bi bi-person-check-fill"
       }
 
@@ -63,7 +67,14 @@ export default {
 
     askFriend() {
       if (this.isAsked) {
-        return;
+        api.post(`/users/${this.user.pk}/cancel_friend/`, {}, {
+          headers: this.$store.getters.header
+        })
+        .then(() => {
+          this.isAsked = false;
+        })
+
+        return
       }
 
       if (!this.isFriend) {
@@ -76,15 +87,14 @@ export default {
 
         return
       }
-      else {
-        api.post(`/users/${this.user.pk}/unfriend/`, {}, {
-          headers: this.$store.getters.header
-        })
-        .then(() => {
-          this.isAsked = false;
-          this.isFriend = false;
-        })
-      }    
+      
+      api.post(`/users/${this.user.pk}/unfriend/`, {}, {
+        headers: this.$store.getters.header
+      })
+      .then(() => {
+        this.isAsked = false;
+        this.isFriend = false;
+      })
     },
   }
 }

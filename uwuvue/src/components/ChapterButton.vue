@@ -40,7 +40,7 @@ export default {
   methods: {
     toggle() {
       if (!this.$store.getters.isLogged) {
-        return false
+        return
       }
 
       this.loading = true

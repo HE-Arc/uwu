@@ -1,14 +1,14 @@
 <template>
   <div class="row">
     <div class="col-12 col-md-8 col-lg-9">
-      <user-title :user="user" :fromProfile="fromProfile"/>
+      <user-title :user="user" :fromProfile="fromProfile" :large="true"/>
     </div>
 
     <div class="col">
       <div class="row">
-      <router-link v-if="fromProfile && requestCount > 0" :to="$route.path + '/requests'" class="btn btn-primary mb-3">
-        friend requests <span class="badge bg-dark">{{requestCount}}</span>
-      </router-link>
+        <router-link v-if="fromProfile && requestCount > 0" :to="$route.path + '/requests'" class="btn btn-primary mb-3">
+          friend requests <span class="badge bg-dark">{{requestCount}}</span>
+        </router-link>
       </div>
     </div>
   </div>

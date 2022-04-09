@@ -45,6 +45,26 @@ export default {
       loading: false
     }
   },
+  
+  created() {
+    if (!this.$store.getters.isLogged) {
+      this.$router.push('/404')
+      return
+    }
+
+    api.get(`/users/is_admin/`, {
+      headers: this.$store.getters.header
+    })
+    .then(response => {
+      if (!response.data.is_admin) {
+        this.$router.push('/404')
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+      this.$router.push('/404')
+    })
+  },
 
   methods: {
     addChapter() {

@@ -1,7 +1,7 @@
 <template>
   <div class="row">
-    <div class="col-4 col-md-2">
-      <friend-icon v-if="!fromProfile" :user="user"/>
+    <div :class="colSize">
+      <friend-icon v-if="!fromProfile && $store.getters.isLogged" :user="user"/>
       <img :src="user.image" class="img-fluid rounded mb-4"/>
     </div>
 
@@ -27,11 +27,22 @@ export default {
   props: {
     user: Object,
     fromProfile: Boolean,
+    large: Boolean
   },
 
   data() {
     return {
       pages: 0
+    }
+  },
+
+  computed: {
+    colSize: function() {
+      if (this.large) {
+        return 'col-4 col-md-3'
+      }
+
+      return 'col-4 col-md-2'
     }
   },
 

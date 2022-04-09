@@ -93,14 +93,19 @@ export default {
     },
 
     checkAdmin() {
+      if (!this.$store.getters.isLogged) {
+        this.isAdmin = false
+        return
+      }
+
       api.get(`/users/is_admin/`, {
         headers: this.$store.getters.header
       })
       .then(response => {
         this.isAdmin = response.data.is_admin
       })
-      .catch(error => {
-        console.log(error)
+      .catch((error) => {
+        console.log(error);
       })
     }
   }
