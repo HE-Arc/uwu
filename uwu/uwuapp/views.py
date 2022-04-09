@@ -1,6 +1,7 @@
 import django
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.dispatch import receiver
 from django_filters.rest_framework import DjangoFilterBackend
 from requests import request
 from rest_framework import viewsets, filters, status, pagination
@@ -100,6 +101,26 @@ class UserViewSet(viewsets.ModelViewSet):
                                 'status' : f'{user_uwu} and {other_uwu_user} are already not friend',
                             }, 
                             status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    @action(detail=True, methods=['post'])
+    def cancel_friend(self, request, pk=None):
+        """
+        Cancel a friend request that has been send to the user {pk}
+        """
+        user = request.user
+        other_user = User.objects.get(pk=pk)
+        
+        uwu_user = UwuUser.objects.get(user=user)
+        uwu_other_user = UwuUser.objects.get(user=other_user)
+        
+        friend_request = FriendRequest.objects.get(sender=user, receiver=other_user)
+        
+        if friend_request:
+            friend_request.is_on_hold = False
+            friend_request.save()
+            return Response({'status':'Friend request has been cancel'}, status=status.HTTP_200_OK)
+        return Response({'status':'A problem has been encounter'}, status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=True, methods=['post'])
     def ask_friend(self, request, pk=None):

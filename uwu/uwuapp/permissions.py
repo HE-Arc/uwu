@@ -72,5 +72,5 @@ class UserPermission(BasePermission):
                            'is_admin']:
             return True
         
-        return view.action in ['my_user', 'ask_friend', 'is_friend', 'unfriend'] and is_auth
+        return view.action in ['my_user', 'ask_friend', 'is_friend', 'unfriend', 'cancel_friend'] and is_auth
         
