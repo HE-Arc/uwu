@@ -502,7 +502,7 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
     """
     queryset = FriendRequest.objects.all().order_by('-timestamp')
     serializer_class = FriendRequestSerializer
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [FriendRequestPermission, ]
     
     @action(detail=True, methods=['post'])
     def decline(self, request, pk=None):

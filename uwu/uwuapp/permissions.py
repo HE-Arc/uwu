@@ -25,9 +25,6 @@ class FriendRequestPermission(BasePermission):
         
         return view.action in ['get_active_friend_request', 'accept', 'cancel', 'decline'] or request.method in SAFE_METHODS
     
-    def has_object_permission(self, request, view, obj):
-        pass
-    
 class MangaPermission(BasePermission):
     
     def has_permission(self, request, view):
