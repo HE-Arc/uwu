@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { Collapse } from 'bootstrap'
+import { Collapse } from 'bootstrap/dist/js/bootstrap.min.js'
 
 export default {
   name : 'NavBar',
