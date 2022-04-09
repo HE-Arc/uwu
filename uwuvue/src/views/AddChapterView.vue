@@ -40,7 +40,7 @@ export default {
     return {
       name: '',
       order: '',
-      page_nb: null,
+      page_nb: '',
       message: '',
       loading: false
     }
@@ -90,9 +90,9 @@ export default {
       })
       .then(() => {
         this.name = '',
-        this.order = null,
-        this.page_nb = null,
-        this.message = "Chapter added"
+        this.order = '',
+        this.page_nb = '',
+        this.message = 'Chapter added'
         this.loading = false
       })
       .catch(error => {
