@@ -64,9 +64,6 @@ export default {
           query: this.query
         }
       })
-      .then(() => {
-        this.search()
-      })
     },
 
     search() {

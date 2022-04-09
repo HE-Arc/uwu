@@ -43,7 +43,7 @@ export default {
       order: '',
       loading: false,
       next: null,
-      user: null,
+      user: {},
       fromProfile: this.$route.name == 'profile-favorites'
     }
   },
@@ -83,8 +83,11 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        this.mangas = response.data.results
-        this.next = response.data.next
+        if (response.data.results) {
+          this.mangas = response.data.results
+          this.next = response.data.next
+        }
+
         this.loading = false
       })
       .catch(() => {

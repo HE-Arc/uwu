@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { Collapse } from 'bootstrap'
+import { Collapse } from 'bootstrap/dist/js/bootstrap.min.js'
 
 export default {
   name : 'NavBar',
@@ -54,11 +54,15 @@ export default {
     },
 
     logOut() {
+      this.hideNavBar()
+
       this.$store.dispatch('logout')
       this.$router.push('/')
     },
 
     searchPressed() {
+      this.hideNavBar()
+
       this.$router.push({
         name: 'search',
         params: {

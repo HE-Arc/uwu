@@ -1,5 +1,17 @@
 <template>
-  <user-title :user="user" :fromProfile="fromProfile"/>
+  <div class="row">
+    <div class="col-12 col-md-8 col-lg-9">
+      <user-title :user="user" :fromProfile="fromProfile"/>
+    </div>
+
+    <div class="col">
+      <div class="row">
+      <router-link v-if="fromProfile && requestCount > 0" :to="$route.path + '/requests'" class="btn btn-primary mb-3">
+        friend requests <span class="badge bg-dark">{{requestCount}}</span>
+      </router-link>
+      </div>
+    </div>
+  </div>
 
   <router-link :to="$route.path + '/readed'" type="button" class="text-decoration-none">
   <h2>Mangas readed</h2>
@@ -68,61 +80,44 @@ export default {
       favorites:[],
       readed:[],
       friends:[],
-      pages : null,
+      requestCount: 0,
       fromProfile: this.$route.name == 'profile'
     }
   },
 
   created() {
-    this.$watch(
-      () => this.$route.name,
-      () => {
-        if (this.$route.name == 'users' || this.$route.name == 'profile')
-        {
-          this.fromProfile = this.$route.name == 'profile'
-          this.fetchUser()
-        }
-      }
-    )
-
-    this.fetchUser()
+    if (this.fromProfile) {
+      api.get('/users/my_user/', {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        this.user = response.data
+        this.fetch()
+      })
+      .catch(() => {
+        this.$router.push('/404')
+      })
+    }
+    else {
+      api.get(`/users/${this.$route.params.id}/`, {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        this.user = response.data
+        this.fetch()
+      })
+      .catch(() => {
+        this.$router.push('/404')
+      })
+    }
   },
 
   methods: {
-    fetchUser() {
-      if (this.fromProfile) {
-        api.get('/users/my_user/', {
-          headers: this.$store.getters.header
-        })
-        .then(response => {
-          this.user = response.data
-          this.fetch()
-        })
-        .catch(() => {
-          this.$router.push('/404')
-        })
-      }
-      else {
-        api.get(`/users/${this.$route.params.id}/`, {
-          headers: this.$store.getters.header
-        })
-        .then(response => {
-          this.user = response.data
-          this.fetch()
-        })
-        .catch(() => {
-          this.$router.push('/404')
-        })
-      }
-    },
-
     fetch() {
       api.get(`users/${this.user.pk}/get_favorites/`, {
         headers: this.$store.getters.header
       })
       .then(response => {
-        this.favorites = []
-
         if (response.data.results) {
           this.favorites = response.data.results
         }
@@ -135,8 +130,6 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        this.readed = []
-
         if (response.data.results) {
           this.readed = response.data.results
         }
@@ -149,8 +142,6 @@ export default {
         headers: this.$store.getters.header
       })
       .then(response => {
-        this.friends = []
-
         if (response.data.results){
           this.friends = response.data.results
           this.friendNext = response.data.next
@@ -158,6 +149,24 @@ export default {
       })
       .catch(error => {
         console.log(error)
+      })
+
+      if (!this.fromProfile) {
+        return;
+      }
+
+      api.get('/friend-requests/get_active_friend_request/', {
+        headers: this.$store.getters.header
+      })
+      .then(response => {
+        if (response.data.results) {
+          this.requestCount = response.data.results.length
+        }
+
+        this.loading = false
+      })
+      .catch(() => {
+        this.loading = false
       })
     }
   }
