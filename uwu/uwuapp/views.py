@@ -111,10 +111,7 @@ class UserViewSet(viewsets.ModelViewSet):
         user = request.user
         other_user = User.objects.get(pk=pk)
         
-        uwu_user = UwuUser.objects.get(user=user)
-        uwu_other_user = UwuUser.objects.get(user=other_user)
-        
-        friend_request = FriendRequest.objects.get(sender=user, receiver=other_user)
+        friend_request = FriendRequest.objects.get(sender=user, receiver=other_user, is_on_hold=True)
         
         if friend_request:
             friend_request.is_on_hold = False
