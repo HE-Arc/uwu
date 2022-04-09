@@ -6,22 +6,22 @@
       <div v-if="error" class="alert alert-info mb-2">{{error}}</div>
 
       <div class="form-group mb-2">
-        <label for="nameInput">Manga name</label>
+        <label for="nameInput">Manga name *</label>
         <input v-model="name" type="text" required class="form-control" id="nameInput" placeholder="manga"/>
       </div>
 
       <div class="form-group mb-2">
-        <label for="authorInput">Author name</label>
+        <label for="authorInput">Author name *</label>
         <input v-model="author" type="text" required class="form-control" id="authorInput" placeholder="author"/>
       </div>
 
       <div class="form-group mb-2">
-        <label for="dateInput">Date</label>
+        <label for="dateInput">Date *</label>
         <input v-model="date" type="date" required class="form-control" id="dateInput"/>
       </div>
 
       <div class="form-group mb-2">
-        <label for="descriptionInput">Description</label>
+        <label for="descriptionInput">Description *</label>
         <textarea v-model="description" class="form-control" id="descriptionInput" placeholder="description"/>
       </div>
 
@@ -56,6 +56,26 @@ export default {
       error: '',
       loading: false
     }
+  },
+
+  created() {
+    if (!this.$store.getters.isLogged) {
+      this.$router.push('/404')
+      return
+    }
+
+    api.get(`/users/is_admin/`, {
+      headers: this.$store.getters.header
+    })
+    .then(response => {
+      if (!response.data.is_admin) {
+        this.$router.push('/404')
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+      this.$router.push('/404')
+    })
   },
 
   methods: {

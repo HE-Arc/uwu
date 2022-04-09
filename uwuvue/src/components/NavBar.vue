@@ -12,7 +12,6 @@
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav me-auto" @click="hideNavBar">
           <router-link to="/users/search" class="nav-link">search users</router-link>
-          <router-link to="/user" v-if="$store.getters.isLogged" class="nav-link">user</router-link>
         </div>
         
         <div class="navbar-nav">
@@ -23,6 +22,7 @@
             </div>
           </form>
 
+          <router-link to="/profile" v-if="$store.getters.isLogged" class="btn btn-outline-primary mb-2 mb-md-0 me-md-2">my profile</router-link>
           <button @click="logOut" v-if="$store.getters.isLogged" class="btn btn-outline-primary">logout</button>
           <router-link to="/login" v-else class="btn btn-outline-primary" @click="hideNavBar">login</router-link>
         </div>
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { Collapse } from 'bootstrap'
+import { Collapse } from 'bootstrap/dist/js/bootstrap.min.js'
 
 export default {
   name : 'NavBar',
@@ -54,11 +54,15 @@ export default {
     },
 
     logOut() {
+      this.hideNavBar()
+
       this.$store.dispatch('logout')
-      this.collapse.hide()
+      this.$router.push('/')
     },
 
     searchPressed() {
+      this.hideNavBar()
+
       this.$router.push({
         name: 'search',
         params: {

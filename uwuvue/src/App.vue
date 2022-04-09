@@ -3,7 +3,7 @@
   <back-button/>
   
   <main class="container p-5">
-    <router-view/>
+    <router-view :key="$route.path"/>
   </main>
 
   <top-button/>

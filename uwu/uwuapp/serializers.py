@@ -3,9 +3,13 @@ from rest_framework import serializers
 from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    image = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['url', 'username', 'pk']
+        fields = ['url', 'username', 'pk', 'image']
+        
+    def get_image(self, obj):
+        return self.context['request'].build_absolute_uri(UwuUser.objects.get(user=obj).image.url)
         
               
 
@@ -33,6 +37,8 @@ class UwuUserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'username', 'friends', 'favorites', 'readed', 'image', 'pk']
         
 class FriendRequestSerializer(serializers.HyperlinkedModelSerializer):
+    sender = UserSerializer(read_only=True)
+    receiver = UserSerializer(read_only=True)
     class Meta:
         model = FriendRequest
-        fields = '__all__'
+        fields = ['url', 'sender', 'receiver', 'is_on_hold', 'timestamp', 'pk']

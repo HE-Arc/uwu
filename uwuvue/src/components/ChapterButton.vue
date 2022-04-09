@@ -1,15 +1,13 @@
 <template>
-  <div class="d-grid">
-    <button @click="toggle" :class="buttonClass"  
-      class="btn square-box">
-      <div class="square-content p-2">
-        <span v-if="loading" class="spinner-border" role="status"/>
-        <h2 v-else>{{chapter.order}}</h2>
-        
-        <p class="small">{{chapter.title}}</p>
-      </div>
-    </button>
-  </div>
+  <button @click="toggle" :class="buttonClass" class="btn flex-fill overflow-hidden">
+    <div class="p-2">
+      <span v-if="loading" class="spinner-border" role="status"/>
+      <h2 v-else>{{chapter.order}}</h2>
+      
+      <h6>{{chapter.title}}</h6>
+      <p>{{chapter.page_nb}} pages</p>  
+    </div>
+  </button>
 </template>
 
 <script>
@@ -42,7 +40,7 @@ export default {
   methods: {
     toggle() {
       if (!this.$store.getters.isLogged) {
-        return false
+        return
       }
 
       this.loading = true
@@ -62,26 +60,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-/* black magic from http://jsfiddle.net/38Tnx/1425/ */
-
-.square-box {
-  position: relative;
-  overflow: hidden;
-}
-
-.square-box:before {
-  content: "";
-  display: block;
-  padding-top: 100%;
-}
-
-.square-content {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-}
-</style>

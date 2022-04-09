@@ -102,13 +102,17 @@ class UwuUser(models.Model):
         Remove a friend
         """
         try:
+            print(other_user in self.friends.all())
             self.friends.remove(other_user)
+            print("other_user: " + str(other_user))
+            print(self.friends.all()[0])
+            print(other_user in self.friends.all())
         except Exception as e:
             print(f"error! : {e}")
             
     def is_friend(self, other_user):
         """
-        Is this user friend with the 'other_user'?
+        Is this user friend with the 'other_user'
         """
         return other_user in self.friends.all()
     
@@ -162,8 +166,7 @@ class FriendRequest(models.Model):
         """
         Decline a friend request by setting 'is_on_hold' field to False
         """
-        self.is_on_hold = False
-        self.save()
+        self.delete()
 
     def cancel(self):
         """

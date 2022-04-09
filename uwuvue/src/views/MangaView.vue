@@ -32,8 +32,8 @@
     </div>
   </div>
 
-  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4">
-    <div v-for="(chapter, index) in chapters" :key="index" class="col">
+  <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4">
+    <div v-for="(chapter, index) in chapters" :key="index" class="col d-flex align-items-stretch">
       <chapter-button :chapter="chapter" @toggle="fetch"/>
     </div>
   </div>
@@ -66,13 +66,6 @@ export default {
   created() {
     this.fetch()
     this.checkAdmin()
-
-    this.$watch(
-      () => this.$store.getters.isLogged,
-      () => {
-        this.checkAdmin()
-      }
-    )
   },
 
   methods: {
@@ -100,15 +93,19 @@ export default {
     },
 
     checkAdmin() {
+      if (!this.$store.getters.isLogged) {
+        this.isAdmin = false
+        return
+      }
+
       api.get(`/users/is_admin/`, {
         headers: this.$store.getters.header
       })
       .then(response => {
-        console.log(response.data)
         this.isAdmin = response.data.is_admin
       })
-      .catch(error => {
-        console.log(error)
+      .catch((error) => {
+        console.log(error);
       })
     }
   }

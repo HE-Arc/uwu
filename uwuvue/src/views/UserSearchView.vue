@@ -14,7 +14,7 @@
     </form>
   </div>
 
-  <div v-if="users.length > 0 || loading || $route.params.query == ''" class="row">
+  <div v-if="users.length > 0 || loading || $route.params.query.trim().length == 0" class="row">
     <div v-for="(user, index) in users" :key="index" class="col-6 col-md-3 col-lg-2">
       <user-thumbnail :user="user"/>
     </div>
@@ -54,13 +54,6 @@ export default {
 
   created() {
     this.search()
-
-    this.$watch(
-      () => this.$route.params,
-      () => {
-        this.search()
-      }
-    )
   },
 
   methods: {
@@ -74,13 +67,13 @@ export default {
     },
 
     search() {
-      if (this.$route.params.query == "") {
+      if (this.$route.params.query.trim().length == 0) {
         return
       }
 
       this.loading = true
 
-      api.get('/uwuusers/', {
+      api.get('/users/', {
         params: {
           search: this.$route.params.query
         },

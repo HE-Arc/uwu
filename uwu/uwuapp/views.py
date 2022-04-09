@@ -1,11 +1,13 @@
 import django
 from django.contrib.auth.models import User
 from django.db import IntegrityError
+from django.dispatch import receiver
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, permissions, filters, status, pagination
+from requests import request
+from rest_framework import viewsets, filters, status, pagination
+from rest_framework.permissions import IsAdminUser, SAFE_METHODS, IsAuthenticated 
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from uwu.settings import BASE_DIR
 from uwu.uwuapp.serializers import ChapterSerializer, FriendRequestSerializer, UwuUserSerializer, MangaSerializer, UserSerializer
 from uwu.uwuapp.models import Chapter, FriendRequest, Manga, UwuUser
 from rest_framework.authtoken.models import Token
@@ -13,7 +15,7 @@ from django.db.models import Q
 from django.contrib.auth.models import AnonymousUser
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
+from .permissions import *
 
 
 title_param = openapi.Parameter('Title', openapi.IN_QUERY, description="chapter's title", type=openapi.TYPE_STRING, required=True)
@@ -25,34 +27,8 @@ class UwuUserViewSet(viewsets.ModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
     queryset = UwuUser.objects.all().order_by('pk')
-    serializer_class = UwuUserSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)           
-    search_fields = ['user__username',] 
-    
-
-    @action(detail=True, methods=['post'])
-    def unfriend(self, request, pk=None):
-        """
-        Unfriending someone from the friends
-        """       
-
-        user_uwu = UwuUser.objects.get(pk=pk)
-        other_user = UwuUser.objects.get(user=request.data['other_user'])
-        
-        if user_uwu.is_friend(other_user):
-            user_uwu.remove_friend(other_user.user)
-            other_user.remove_friend(user_uwu.user)
-            return Response({
-                                'status' : f'{user_uwu} and {other_user} are not friend anymore',
-                            }, 
-                            status=status.HTTP_200_OK)
-        else:
-            return Response({
-                                'status' : f'{user_uwu} and {other_user} are already not friend',
-                            }, 
-                            status=status.HTTP_400_BAD_REQUEST)
-
-
+    serializer_class = UwuUserSerializer       
+    permission_classes = [IsAdminUser,]
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -60,7 +36,19 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('date_joined')
     serializer_class = UserSerializer
-    permissions_class = [permissions.IsAdminUser,]
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    search_fields = ['username',]
+    permission_classes = [UserPermission,]
+    
+    def list(self, request):
+        super_list = super().list(request)
+        current_user = request.user
+        
+        for user in super_list.data['results']:
+            if user['pk'] == current_user.pk:
+                super_list.data['results'].remove(user)           
+            
+        return super_list
 
     
     def create(self, validated_data):
@@ -89,6 +77,48 @@ class UserViewSet(viewsets.ModelViewSet):
         except:
             user.delete()
     
+    
+    @action(detail=True, methods=['post'])
+    def unfriend(self, request, pk=None):
+        """
+        Unfriending someone from the friends
+        """       
+        user = request.user
+        other_user = User.objects.get(pk=pk)
+
+        user_uwu = UwuUser.objects.get(user=user)
+        other_uwu_user = UwuUser.objects.get(user=other_user)
+        
+        if user_uwu.is_friend(other_user):
+            user_uwu.remove_friend(other_user)
+            other_uwu_user.remove_friend(user)
+            return Response({
+                                'status' : f'{user} and {other_user} are not friend anymore',
+                            }, 
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({
+                                'status' : f'{user_uwu} and {other_uwu_user} are already not friend',
+                            }, 
+                            status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    @action(detail=True, methods=['post'])
+    def cancel_friend(self, request, pk=None):
+        """
+        Cancel a friend request that has been send to the user {pk}
+        """
+        user = request.user
+        other_user = User.objects.get(pk=pk)
+        
+        friend_request = FriendRequest.objects.get(sender=user, receiver=other_user, is_on_hold=True)
+        
+        if friend_request:
+            friend_request.is_on_hold = False
+            friend_request.save()
+            return Response({'status':'Friend request has been cancel'}, status=status.HTTP_200_OK)
+        return Response({'status':'A problem has been encounter'}, status=status.HTTP_400_BAD_REQUEST)
+    
     @action(detail=True, methods=['post'])
     def ask_friend(self, request, pk=None):
         """
@@ -104,7 +134,7 @@ class UserViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
             
         
-        if user in other_user.friends.all():
+        if UwuUser.objects.get(user=user).is_friend(other_user):
             return Response({
                                 'status' : f'{user} and {other_user} are already friend',
                             }, 
@@ -151,10 +181,6 @@ class UserViewSet(viewsets.ModelViewSet):
         results = paginator.paginate_queryset(results, request)
 
         serializer = UserSerializer(results, many=True, context=context)
-        if len(serializer.data) > 0:
-            for f in serializer.data:
-                
-                f['image'] = request.build_absolute_uri(UwuUser.objects.get(user=f['url'].obj).image.url)
         
         response = paginator.get_paginated_response(serializer.data)
 
@@ -186,15 +212,13 @@ class UserViewSet(viewsets.ModelViewSet):
         context = {'request':request}
         user = User.objects.get(pk=pk)
         uwu_user = UwuUser.objects.get(user=user)
-        results = uwu_user.favorites.all().order_by
+        results = uwu_user.favorites.all().order_by('-date')
 
-        results = paginator.paginate_queryset(results, request)
-        serializer = MangaSerializer(data=results, many=True, context=context)
-        if serializer.is_valid():
-            pass
+        serializer = MangaSerializer(results, many=True, context=context)
+        results = paginator.paginate_queryset(results, request)        
         response = paginator.get_paginated_response(serializer.data)
-
-        return response
+        
+        return Response(response.data, status=status.HTTP_200_OK)
     
     @action(detail=True)        
     def get_readed_mangas(self, request, pk=None):
@@ -259,7 +283,7 @@ class UserViewSet(viewsets.ModelViewSet):
         
         user = request.user
         
-        serializer = UwuUserSerializer(UwuUser.objects.get(user=user), context=context)
+        serializer = UserSerializer(user, context=context)
         
         return Response(serializer.data)
     
@@ -300,17 +324,21 @@ class MangaViewSet(viewsets.ModelViewSet):
     """
     queryset = Manga.objects.all().order_by('-updated')
     serializer_class = MangaSerializer
+    permission_classes = [MangaPermission,]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ['is_finished']
     search_fields = ['name', 'author']
     ordering_fields = ['name', 'author', 'date']
     
-    @swagger_auto_schema(manual_parameters=[title_param, page_nb, order_nb], request_body=None)
+    @swagger_auto_schema(manual_parameters=[title_param, page_nb, order_nb], request_body=None, responses={200:openapi.Response('response description', ChapterSerializer)})
     @action(detail=True, methods=['post'])
     def add_chapter(self, request, pk=None):
         """
         It adds a chapter to a manga.
         """
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        
         context = {'request':request}
         manga = Manga.objects.get(pk=pk)
         
@@ -445,6 +473,7 @@ class ChapterViewSet(viewsets.ModelViewSet):
     """
     queryset = Chapter.objects.all().order_by('order')
     serializer_class = ChapterSerializer
+    permission_classes = [ChapterPermission,]
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -491,8 +520,19 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
     """
     queryset = FriendRequest.objects.all().order_by('-timestamp')
     serializer_class = FriendRequestSerializer
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [FriendRequestPermission, ]
     
+    @action(detail=True, methods=['post'])
+    def decline(self, request, pk=None):
+        friend_request = FriendRequest(pk = pk)
+        friend_request.decline()
+        return Response({'status':'The friend request has been deleted'})
+    
+    @action(detail=True, methods=['post'])
+    def cancel(self, request, pk=None):
+        friend_request = FriendRequest(pk = pk)
+        friend_request.cancel()
+        return Response({'status':'The friend request has been canceled'})
         
     @action(detail=True, methods=['post'])
     def accept(self, request, pk=None):
@@ -543,17 +583,21 @@ class FriendRequestViewSet(viewsets.ModelViewSet):
         queryset = self.queryset.filter(Q(sender=self.request.user) | Q(receiver=self.request.user))
         serializer = FriendRequestSerializer(queryset, many=True, context=context)
         
-        return Response(serializer.data)
+        if serializer.is_valid():
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=False)
     def get_active_friend_request(self, request):
         """
-        Get every friends requests that ar adressed to you.
+        Get every friends requests that are adressed to you.
         """
         
         user = request.user
         
-        friend_requests = FriendRequest.objects.all().filter(receiver=user).order_by('-timestamp')
+        friend_requests = FriendRequest.objects.all().filter(receiver=user).filter(is_on_hold=True).order_by('-timestamp')
 
         page = self.paginate_queryset(friend_requests)
         if page is not None:

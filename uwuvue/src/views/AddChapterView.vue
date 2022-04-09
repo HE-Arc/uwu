@@ -6,12 +6,12 @@
       <div v-if="message" class="alert alert-info mb-2">{{message}}</div>
 
       <div class="form-group mb-2">
-        <label for="nameInput">Chapter name</label>
+        <label for="nameInput">Chapter name *</label>
         <input v-model="name" type="text" required class="form-control" id="nameInput" placeholder="chapter"/>
       </div>
 
       <div class="form-group mb-2">
-        <label for="pagesInput">Number of pages</label>
+        <label for="pagesInput">Number of pages *</label>
         <input v-model="page_nb" type="number" required class="form-control" id="pagesInput" placeholder="pages"/>
       </div>
 
@@ -39,11 +39,31 @@ export default {
   data() {
     return {
       name: '',
-      order: null,
+      order: '',
       page_nb: null,
       message: '',
       loading: false
     }
+  },
+  
+  created() {
+    if (!this.$store.getters.isLogged) {
+      this.$router.push('/404')
+      return
+    }
+
+    api.get(`/users/is_admin/`, {
+      headers: this.$store.getters.header
+    })
+    .then(response => {
+      if (!response.data.is_admin) {
+        this.$router.push('/404')
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+      this.$router.push('/404')
+    })
   },
 
   methods: {
@@ -61,7 +81,7 @@ export default {
         'page_nb': this.page_nb
       }
 
-      if (this.order != null) {
+      if (this.order != '') {
         data['order'] = this.order
       }
 
