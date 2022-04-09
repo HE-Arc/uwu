@@ -25,6 +25,16 @@ class FriendRequestPermission(BasePermission):
         
         return view.action in ['get_active_friend_request', 'accept', 'cancel', 'decline'] or request.method in SAFE_METHODS
     
+    def has_object_permission(self, request, view, obj):
+        if not request.user.is_authenticated:
+            return False
+        
+        if view.action == 'cancel':
+            return obj.sender == request.user or request.user.is_staff
+        if view.action in ['accept', 'decline']:
+            return obj.receiver == request.user or request.user.is_staff
+        return True
+    
 class MangaPermission(BasePermission):
     
     def has_permission(self, request, view):
@@ -58,8 +68,9 @@ class UserPermission(BasePermission):
                            'get_friends', 
                            'get_readed', 
                            'get_readed_mangas',
-                           'total_pages_readed',]:
+                           'total_pages_readed',
+                           'is_admin']:
             return True
         
-        return view.action in ['is_admin', 'my_user', 'ask_friend', 'is_friend', 'unfriend'] and is_auth
+        return view.action in ['my_user', 'ask_friend', 'is_friend', 'unfriend'] and is_auth
         
