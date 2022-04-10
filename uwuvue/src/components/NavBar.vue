@@ -22,7 +22,7 @@
             </div>
           </form>
 
-          <router-link to="/profile" v-if="$store.getters.isLogged" class="btn btn-outline-primary mb-2 mb-md-0 me-md-2">my profile</router-link>
+          <router-link to="/profile" v-if="$store.getters.isLogged" class="btn btn-outline-primary mb-2 mb-md-0 me-md-2" @click="hideNavBar">my profile</router-link>
           <button @click="logOut" v-if="$store.getters.isLogged" class="btn btn-outline-primary">logout</button>
           <router-link to="/login" v-else class="btn btn-outline-primary" @click="hideNavBar">login</router-link>
         </div>
