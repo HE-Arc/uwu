@@ -32,8 +32,8 @@
     </div>
   </div>
 
-  <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4">
-    <div v-for="(chapter, index) in chapters" :key="index" class="col d-flex align-items-stretch">
+  <div class="row gy-4 gx-3 gx-md-4">
+    <div v-for="(chapter, index) in chapters" :key="index" class="col-6 col-sm-4  col-md-3 col-lg-2 d-flex align-items-stretch">
       <chapter-button :chapter="chapter" @toggle="fetch"/>
     </div>
   </div>

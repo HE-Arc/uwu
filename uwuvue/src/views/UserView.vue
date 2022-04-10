@@ -17,8 +17,8 @@
   <h2>Mangas readed</h2>
   </router-link>
 
-  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4"  v-if="readed.length > 0">
-    <div v-for="(manga, index) in readed.slice(0, 6)" :key="index" class="col">
+  <div class="row"  v-if="readed.length > 0">
+    <div v-for="(manga, index) in readed.slice(0, 6)" :key="index" class="col-6 col-md-3 col-lg-2">
       <manga-thumbnail :manga="manga" :simple="true"/>
     </div>
   </div>
@@ -31,8 +31,8 @@
     <h2 class="mt-3">Favorites mangas</h2>
   </router-link>
 
-  <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4"  v-if="favorites.length > 0">
-    <div v-for="(manga, index) in favorites.slice(0, 6)" :key="index" class="col">
+  <div class="row gy-4 gx-3 gx-md-4"  v-if="favorites.length > 0">
+    <div v-for="(manga, index) in favorites.slice(0, 6)" :key="index" class="col-6 col-md-3 col-lg-2">
       <manga-thumbnail :manga="manga" :simple="true"/>
     </div>
   </div>
@@ -46,8 +46,8 @@
       <h2 class="mt-3">My Friends</h2>
     </router-link>
 
-    <div class="row row-cols-3 row-cols-md-4 row-cols-lg-6 gy-4 gx-3 gx-md-4" v-if="friends.length > 0">
-      <div v-for="(friends, index) in friends.slice(0, 6)" :key="index" class="col">
+    <div class="row gy-4 gx-3 gx-md-4" v-if="friends.length > 0">
+      <div v-for="(friends, index) in friends.slice(0, 6)" :key="index" class="col-6 col-md-3 col-lg-2">
         <user-thumbnail :user="friends"/>
       </div>
     </div>
