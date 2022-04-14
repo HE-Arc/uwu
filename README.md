@@ -4,6 +4,10 @@ Uwu is the website you need to save your manga reading progress! Just create an 
 ## Api Django
 It is suggested to use a Python virtual environment.
 
+### Api docs
+- ReDoc: https://uwu.srvz-webapp.he-arc.ch/api/docs
+- Swagger: https://uwu.srvz-webapp.he-arc.ch/api/playground/
+
 ### Requirements
 - Python
 
